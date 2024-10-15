@@ -35,6 +35,10 @@ export default function ListingCard({ item, refreshListingData }) {
             color: "#4CAF50", // Green
             textColor: "white",
          },
+         Completed: {
+            color: "#4CAF50", // Green
+            textColor: "white",
+         },
          complete: {
             color: "#4CAF50",
             textColor: "white",
