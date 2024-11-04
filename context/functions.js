@@ -99,7 +99,9 @@ async function sortEntry(type, sortType) {
         endpoints.sortTsf + `${sortType}/Out/Tsf/${storeName}`
       );
     case "RTV":
-      return await getData(endpoints.sortRtv + `${sortType}/rtv`);
+      return await getData(endpoints.sortRTV + `${sortType}/rtv`);
+    case "SC":
+      return await getData(endpoints.sortSC + `${sortType}/SC`);
     default:
       console.error("Invalid type for sorting");
   }
@@ -123,7 +125,8 @@ async function filterEntry(type, filterParam) {
       );
     case "PO":
       return await getData(endpoints.filterPo + `${filterParam}`);
-
+    case "SC":
+      return await getData(endpoints.filterSc + `${filterParam}`);
     default:
       console.error("Filtering not available for this module");
   }
