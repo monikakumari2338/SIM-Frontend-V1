@@ -9,10 +9,19 @@ import {
    KeyboardAvoidingView,
    Platform,
 } from "react-native";
+import { handleLogin } from "../../context/auth";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Login() {
-   function handleLogin() {
-      console.log(username, password, store);
+   const navigation = useNavigation();
+
+   async function loginAndNavigate() {
+      try {
+         await handleLogin(username, password, store);
+         navigation.navigate("Dashboard");
+      } catch (error) {
+         console.log(error);
+      }
    }
 
    const [username, setUsername] = useState("");
@@ -77,7 +86,7 @@ export default function Login() {
                <Button
                   buttonStyle={styles.loginButton}
                   titleStyle={styles.loginButtonTitle}
-                  onPress={handleLogin}
+                  onPress={loginAndNavigate}
                >
                   Login
                </Button>

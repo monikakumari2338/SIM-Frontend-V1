@@ -9,17 +9,25 @@ import Footer from "./globalComps/Footer";
 import Header from "./globalComps/Header";
 import Dashboard from "./modules/Dashboard/Dashboard";
 import RtvNavigator from "./modules/ReturnToVendor/RtvNavigator";
+import Login from "./modules/Login/Login";
+import { useNavigationState } from "@react-navigation/native";
 const Drawer = createDrawerNavigator();
 
 export default function AppContainer() {
+   const isLogin = useNavigationState((state) => {
+      if (!state || !state.routes) return false;
+      const route = state.routes[state.index];
+      return route.name === "Log Out";
+   });
+
    return (
       <>
          {/* Header */}
-         <Header />
+         {!isLogin && <Header />}
 
          {/* Drawer Navigator */}
          <Drawer.Navigator
-            initialRouteName="Dashboard"
+            initialRouteName="Login"
             screenOptions={{
                drawerStyle: {
                   backgroundColor: "#112d4e",
@@ -55,10 +63,25 @@ export default function AppContainer() {
             <Drawer.Screen name="Transfer" component={TransferNavigator} />
             <Drawer.Screen name="Stock Count" component={ScNavigator} />
             <Drawer.Screen name="Return To Vendor" component={RtvNavigator} />
+            <Drawer.Screen
+               name="Log Out"
+               component={Login}
+               options={{
+                  headerShown: false,
+                  drawerItemStyle: {
+                     backgroundColor: "#f9f9f9",
+                  },
+                  drawerLabelStyle: {
+                     color: "crimson",
+                     textAlign: "center",
+                     fontFamily: "Montserrat-Bold",
+                  },
+               }}
+            />
          </Drawer.Navigator>
 
          {/* Footer */}
-         <Footer />
+         {!isLogin && <Footer />}
       </>
    );
 }

@@ -30,7 +30,7 @@ async function getToken() {
 }
 
 // Function to handle login, store token, and retrieve token
-async function handleLogin() {
+async function handleLogin(email, password, storeName) {
    try {
       const loginRequest = {
          email,
@@ -166,6 +166,7 @@ function compareStructure(obj1, obj2) {
 
 export {
    // Functions
+   handleLogin,
    getData,
    postData,
    deleteData,
@@ -180,6 +181,6 @@ export {
 };
 
 // Automatically authenticate on application startup
-handleLogin().catch((error) => {
-   console.error("Automatic authentication failed", error);
-});
+// handleLogin().catch((error) => {
+//    console.error("Automatic authentication failed", error);
+// });
