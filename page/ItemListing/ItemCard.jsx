@@ -25,9 +25,6 @@ const completedStatuses = [
 ];
 
 export default function ItemCard({ item, status, recountStatus, deleteItem }) {
-   // debug
-   console.log("Item Card:", item, status, recountStatus);
-
    // States and Constants
    const [quantityOverlay, setQuantityOverlay] = useState(false);
    const [proofImagesOverlay, setProofImagesOverlay] = useState(false);
@@ -63,7 +60,7 @@ export default function ItemCard({ item, status, recountStatus, deleteItem }) {
                      ) {
                         // get image URI
                         const imageUri = res.assets[0].uri;
-                        // append image to proofImages array
+                        // set image URI to item.image
                         item.image = imageUri;
                         // show success message
                         Toast.show({
@@ -152,7 +149,7 @@ export default function ItemCard({ item, status, recountStatus, deleteItem }) {
                         },
                      ]}
                   >
-                     {item.qty || item.shippedQty}
+                     {item.qty || item.shippedQty || item.requestedQty}
                   </Text>
                </Pressable>
 
@@ -660,7 +657,7 @@ const styles = {
       alignItems: "center",
    },
    uploadButton: {
-      borderRadius: 10,
+      borderRadius: 5,
       padding: 3,
       borderColor: "white",
    },

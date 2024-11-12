@@ -27,7 +27,7 @@ export default function AppContainer() {
 
          {/* Drawer Navigator */}
          <Drawer.Navigator
-            initialRouteName="Login"
+            initialRouteName="Log Out"
             screenOptions={{
                drawerStyle: {
                   backgroundColor: "#112d4e",
