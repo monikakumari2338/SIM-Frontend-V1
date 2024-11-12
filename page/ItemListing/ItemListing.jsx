@@ -77,6 +77,7 @@ export default function EntryItemDetailPage({ route }) {
             break;
          case "DSD":
             response = await getData(endpoints.fetchItemsDSD + entryItem.id);
+            console.log("ITEMS:", response.items);
             setTempItems(response.items);
             setTempSupplier(response.supplierId);
             break;

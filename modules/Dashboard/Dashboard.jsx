@@ -180,43 +180,21 @@ export default function Dashboard({ navigation }) {
                <Text style={styles.sectionHeading}>My Tasks</Text>
 
                {/* Cards */}
-               {/* <Carousel
-            loop
-            mode="parallax"
-            width={380}
-            height={180}
-            autoPlay={true}
-            autoPlayInterval={3000}
-            data={data.taskCardData}
-            scrollAnimationDuration={1000}
-            renderItem={({ index }) => (
-              <TaskCard info={data.taskCardData[index]} />
-            )}
-            pagingEnabled={true}
-            onSnapToItem={(index) => setActiveIndex(index)}
-          /> */}
-
-               {/* Pagination for the Carousel */}
-
-               {/* <Pagination
-                  dotsLength={data.taskCardData.length}
-                  activeDotIndex={activeIndex}
-                  containerStyle={{ backgroundColor: "transparent" }}
-                  dotStyle={{
-                     width: 10,
-                     height: 10,
-                     borderRadius: 5,
-                     marginHorizontal: 8,
-                     backgroundColor: "rgba(255, 255, 255, 0.92)",
-                  }}
-                  inactiveDotStyle={
-                     {
-                        // Optional inactive dot styles
-                     }
-                  }
-                  inactiveDotOpacity={0.4}
-                  inactiveDotScale={0.6}
-               /> */}
+               <Carousel
+                  loop
+                  mode="parallax"
+                  width={380}
+                  height={180}
+                  autoPlay={true}
+                  autoPlayInterval={3000}
+                  data={data.taskCardData}
+                  scrollAnimationDuration={1000}
+                  renderItem={({ index }) => (
+                     <TaskCard info={data.taskCardData[index]} />
+                  )}
+                  pagingEnabled={true}
+                  onSnapToItem={(index) => setActiveIndex(index)}
+               />
 
                {/* Heading: My Dashboard */}
                <Text style={styles.sectionHeading}>My Dashboard</Text>
