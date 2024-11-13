@@ -303,10 +303,9 @@ function FilterBottomSheet({
    ];
 
    // Filter options based on the type
-   const filterOpts =
-      type === "PO"
-         ? baseFilterOpts.filter((opt) => opt.title !== "Reason")
-         : baseFilterOpts;
+   const filterOpts = ["PO", "DSD"].includes(type)
+      ? baseFilterOpts.filter((opt) => opt.title !== "Reason")
+      : baseFilterOpts;
 
    // Functions
    async function resetFilter() {
