@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
    View,
    Text,
@@ -16,7 +16,7 @@ import {
    ProgressChart,
 } from "react-native-chart-kit";
 import { endpoints } from "../../context/endpoints";
-import { storeName, getData } from "../../context/auth";
+import { CredentialsContext } from "../../context/AuthContext";
 
 export default function Dashboard({ navigation }) {
    // States and Vars
@@ -27,6 +27,9 @@ export default function Dashboard({ navigation }) {
       transferRequestDataArray: [],
       transferFulfillmentDataArray: [],
    });
+
+   // Creds
+   const { getData, storeName } = useContext(CredentialsContext);
 
    // Functions
    async function fetchData() {

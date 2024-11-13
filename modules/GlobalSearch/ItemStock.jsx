@@ -1,10 +1,10 @@
 import { Button, Overlay, SearchBar } from "@rneui/themed";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, StyleSheet, Text, Image, FlatList } from "react-native";
 import { Divider } from "@rneui/themed";
-import { getData, storeName } from "../../context/auth";
 import { endpoints } from "../../context/endpoints";
 import { useNavigation } from "@react-navigation/native";
+import { CredentialsContext } from "../../context/AuthContext";
 
 export default function ItemStock({ route }) {
    const { item } = route.params;
@@ -22,6 +22,8 @@ export default function ItemStock({ route }) {
    // is a different store selected?
    const diffStore = selectedStore !== storeName;
    const [searchTerm, setSearchTerm] = useState("");
+   // Creds
+   const { getData, storeName } = useContext(CredentialsContext);
 
    // Sync Functions
    function changeSize(size) {

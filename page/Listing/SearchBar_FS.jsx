@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 // React Native Imports
 import { View, Pressable, StyleSheet, Text } from "react-native";
@@ -8,16 +8,13 @@ import { Icon, SearchBar, ListItem } from "@rneui/themed";
 
 // Custom Components
 import { BottomSheet } from "@rneui/base";
-import {
-   searchEntry,
-   sortEntry,
-   filterEntry,
-   fetchData,
-} from "../../context/functions";
+import { FunctionContext } from "../../context/FunctionContext";
 
 export default function SearchBar_FS({ type, setListingData }) {
    // Search string state
    const [searchStr, setSearchStr] = useState("");
+   // Function Context
+   const { searchEntry, filterEntry, fetchData } = useContext(FunctionContext);
 
    // Search Function
    async function searchData() {
@@ -152,6 +149,7 @@ function SortBottomSheet({
    setListingData,
 }) {
    // States and Vars
+   const { sortData } = useContext(FunctionContext);
    const sortOpts = [
       {
          title: "Sort by",
@@ -263,6 +261,7 @@ function FilterBottomSheet({
 	*/
 
    // States and Vars
+   const { fetchData } = useContext(FunctionContext);
    const baseFilterOpts = [
       {
          title: "Filter by",

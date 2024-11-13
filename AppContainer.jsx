@@ -12,6 +12,7 @@ import RtvNavigator from "./modules/ReturnToVendor/RtvNavigator";
 import Login from "./modules/Login/Login";
 import { useNavigationState } from "@react-navigation/native";
 const Drawer = createDrawerNavigator();
+import { FunctionProvider } from "./context/FunctionContext";
 
 export default function AppContainer() {
    const isLogin = useNavigationState((state) => {

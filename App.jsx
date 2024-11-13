@@ -13,6 +13,8 @@ import Toast, { BaseToast } from "react-native-toast-message";
 // Contexts and Fonts
 import { useFonts } from "expo-font";
 import AppContainer from "./AppContainer";
+import { CredentialsProvider } from "./context/AuthContext";
+import { FunctionProvider } from "./context/FunctionContext";
 
 // implement a loader for the app content
 
@@ -38,12 +40,16 @@ export default function App() {
       <ThemeProvider theme={theme}>
          <NavigationContainer>
             {/* APP CONTAINER */}
-            <PaperProvider>
-               <AppContainer />
-               {/* <Login /> */}
-            </PaperProvider>
-            {/* TOAST */}
-            <Toast config={toastConfig} />
+            <CredentialsProvider>
+               <FunctionProvider>
+                  <PaperProvider>
+                     <AppContainer />
+                     {/* <Login /> */}
+                  </PaperProvider>
+                  {/* TOAST */}
+                  <Toast config={toastConfig} />
+               </FunctionProvider>
+            </CredentialsProvider>
          </NavigationContainer>
       </ThemeProvider>
    );

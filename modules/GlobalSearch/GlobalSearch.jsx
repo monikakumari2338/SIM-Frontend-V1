@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { SearchBar, Button, Icon } from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
-import { storeName, getData } from "../../context/auth";
 import { useNavigation } from "@react-navigation/native";
+import { CredentialsContext } from "../../context/AuthContext";
 
 export default function GlobalSearch() {
    // Constants and Variables
    const [sku, setSku] = useState("");
    const [item, setItem] = useState(null);
+   const { storeName, getData } = useContext(CredentialsContext);
 
    // Search Function
    async function searchSku(sku) {

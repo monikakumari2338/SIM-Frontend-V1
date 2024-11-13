@@ -1,15 +1,20 @@
 import { Divider, Icon } from "@rneui/themed";
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { handleDelete } from "../../context/functions";
-import { getData } from "../../context/auth";
 import { endpoints } from "../../context/endpoints";
+import { CredentialsContext } from "../../context/AuthContext";
+import { FunctionContext } from "../../context/FunctionContext";
 
 export default function ListingCard({ item, refreshListingData }) {
    // Navigation
    const navigation = useNavigation();
+
+   // Creds
+   const { getData } = useContext(CredentialsContext);
+   // Function Context
+   const { handleDelete } = useContext(FunctionContext);
 
    // Sub-Components for the Listing Card: InfoContainer / ProgressChip
 

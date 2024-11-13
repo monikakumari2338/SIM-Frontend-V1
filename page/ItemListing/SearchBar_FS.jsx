@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 // React Native Imports
 import { View, Pressable, StyleSheet, Text } from "react-native";
@@ -7,16 +7,19 @@ import { View, Pressable, StyleSheet, Text } from "react-native";
 import { Icon, SearchBar } from "@rneui/themed";
 
 // Custom Components
-import { getData } from "../../context/auth";
 import Toast from "react-native-toast-message";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import XLSX from "xlsx";
+import { CredentialsContext } from "../../context/AuthContext";
 
 export default function SearchBar_FS({ entryItem, tempItems, setTempItems }) {
    // States and Vars
    const { id } = entryItem;
    const [searchStr, setSearchStr] = useState("");
+
+   // Creds
+   const { getData } = useContext(CredentialsContext);
 
    // Search Application
    useEffect(() => {

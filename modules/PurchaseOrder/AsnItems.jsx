@@ -1,17 +1,12 @@
-import {
-   compareStructure,
-   getData,
-   postData,
-   storeName,
-} from "../../context/auth";
 import { FlatList } from "react-native-gesture-handler";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { ImageBackground, View } from "react-native";
 import backgroundImg from "../../assets/bg3.jpg";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import XLSX from "xlsx";
+import { CredentialsContext } from "../../context/AuthContext";
 
 // Custom Components
 import { endpoints } from "../../context/endpoints";
@@ -24,6 +19,9 @@ import Toast from "react-native-toast-message";
 export default function AsnItems({ route }) {
    // States and consts
    const { poItem, asnItem } = route.params;
+   const { compareStructure, getData, postData, storeName } =
+      useContext(CredentialsContext);
+
    let asnId, asnStatus;
    // if asnItem is not null, then load the asnId and asnStatus
    if (asnItem) {

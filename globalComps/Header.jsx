@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
 import { Icon } from "@rneui/themed";
-import { storeName } from "../context/auth";
+import { CredentialsContext } from "../context/AuthContext";
 
 export default function Header() {
+   const { storeName } = useContext(CredentialsContext);
+
    const details = [
       {
          icon: "storefront",

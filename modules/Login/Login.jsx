@@ -1,5 +1,5 @@
 import { Button } from "@rneui/themed";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
    View,
    Text,
@@ -9,11 +9,12 @@ import {
    KeyboardAvoidingView,
    Platform,
 } from "react-native";
-import { handleLogin } from "../../context/auth";
 import { useNavigation } from "@react-navigation/native";
+import { CredentialsContext } from "../../context/AuthContext";
 
 export default function Login() {
    const navigation = useNavigation();
+   const { handleLogin } = useContext(CredentialsContext);
 
    async function loginAndNavigate() {
       try {

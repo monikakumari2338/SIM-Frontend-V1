@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
    View,
    Text,
@@ -20,11 +20,11 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import ListingCard from "./ListingCard";
 import EmptyPageComponent from "../../globalComps/EmptyPageComp";
 import SearchBar from "./SearchBar_FS";
-import { fetchData, createEntry } from "../../context/functions";
 import { format } from "date-fns";
-import { getData, postData, storeName, userName } from "../../context/auth";
 import { endpoints } from "../../context/endpoints";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { CredentialsContext } from "../../context/AuthContext";
+import { FunctionContext } from "../../context/FunctionContext";
 
 export default function ListingPage({ type }) {
    // Navigation
@@ -33,6 +33,11 @@ export default function ListingPage({ type }) {
    const isFocused = useIsFocused();
    // Theme Context
    const { theme } = useTheme();
+   // Creds
+   const { getData, postData, storeName, userName } =
+      useContext(CredentialsContext);
+   // Function Context
+   const { fetchData, createEntry } = useContext(FunctionContext);
 
    // ------------ Listing Data State ------------
    // Listing data states
@@ -170,6 +175,7 @@ function TsfSupplierOverlay({ tsfSupplierOverlay, setSupplierOverlay }) {
    const navigation = useNavigation();
    const [suggestions, setSuggestions] = useState([]);
    const [tsfSupplier, setTsfSupplier] = useState("");
+   const { postData } = useContext(CredentialsContext);
 
    // Functions
    async function handleSupplierIdChange(text) {

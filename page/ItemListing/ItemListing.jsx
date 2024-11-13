@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
    FlatList,
    View,
@@ -21,7 +21,6 @@ import {
 import { PaperProvider, Portal, FAB, AnimatedFAB } from "react-native-paper";
 import SearchBar from "./SearchBar_FS";
 import EmptyPageComponent from "../../globalComps/EmptyPageComp";
-import { getData, postData, storeName } from "../../context/auth";
 import Toast from "react-native-toast-message";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -33,9 +32,13 @@ import { useIsFocused } from "@react-navigation/native";
 import { AsnCard2 } from "../../modules/PurchaseOrder/AsnCard";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Sharing from "expo-sharing";
+import { CredentialsContext } from "../../context/AuthContext";
 
 export default function EntryItemDetailPage({ route }) {
    const navigation = useNavigation();
+
+   // Creds
+   const { getData, postData, storeName } = useContext(CredentialsContext);
 
    // Extract the entryItem from the route params
    const { entryItem } = route.params;
@@ -442,6 +445,7 @@ export function DetailsTab({
 }) {
    // Function for fetching the TSF header
    const [tsfHeader, setTsfHeader] = useState([]);
+   const { getData } = useContext(CredentialsContext);
    async function fetchTsfHeader() {
       const response = await getData(endpoints.fetchItemsTsf + entryItem.id);
       return [
@@ -593,6 +597,7 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
    const isRecounted = entryItem.recountStatus === "Completed";
    const [proofOverlay, setProofOverlay] = useState(false);
    const navigation = useNavigation();
+   const { postData } = useContext(CredentialsContext);
 
    // Functions
    async function handleSave() {
@@ -876,6 +881,8 @@ function TsfButtonGroup({ entryItem, tempItems, tempReason }) {
       The buttons are conditionally rendered based on the basis of type which can be either TSFIN or TSFOUT.
       The buttons are also conditionally disabled based on the status of the entry item.
    */
+
+   const { postData } = useContext(CredentialsContext);
 
    // Functions for Store 1
    async function handleRequest(startDate, endDate) {
@@ -1238,6 +1245,7 @@ function ReasonsOverlay({
    // States and vars
    const [reasons, setReasons] = useState([]);
    const navigation = useNavigation();
+   const { getData } = useContext(CredentialsContext);
 
    // Functions
    async function fetchReasons() {
@@ -1329,6 +1337,7 @@ function SupplierOverlay({
    const [suggestions, setSuggestions] = useState([]);
    const [supplierId, setSupplierId] = useState("");
    const navigation = useNavigation();
+   const { getData } = useContext(CredentialsContext);
 
    async function handleSupplierIdChange(text) {
       try {
@@ -1456,6 +1465,7 @@ function ProofOverlay({
 }) {
    const navigation = useNavigation();
    const [image, setImage] = useState("");
+   const { postData } = useContext(CredentialsContext);
 
    // Functions
    async function pickImage() {
@@ -1470,28 +1480,6 @@ function ProofOverlay({
       }
    }
 
-   async function handleRTVSubmit() {
-      const data = {
-         id: entryItem.id,
-         totalSku: tempItems.reduce((acc, item) => acc + Number(item.qty), 0),
-         status: "Complete",
-         items: tempItems,
-         imageData: image,
-         reason: tempReason,
-         supplierId: tempSupplier,
-      };
-      try {
-         const response = await postData(endpoints.submitRTV, data);
-         console.log("RTV Response : ", response);
-      } catch (error) {
-         Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: "Return quantity exceeds the received quantity.",
-         });
-      }
-   }
-
    async function handleSubmit() {
       const data = {
          id: entryItem.id,
@@ -1501,17 +1489,24 @@ function ProofOverlay({
          imageData: image,
       };
 
-      if (entryItem.type === "IA") {
-         data.reason = tempReason;
-         await postData(endpoints.submitIA, data);
-      } else if (entryItem.type === "DSD") {
-         data.supplierId = tempSupplier;
-         await postData(endpoints.submitDSD, data);
-      } else if (entryItem.type === "RTV") {
-         handleRTVSubmit();
-      }
+      try {
+         if (entryItem.type === "IA") {
+            data.reason = tempReason;
+            await postData(endpoints.submitIA, data);
+         } else if (entryItem.type === "DSD") {
+            data.supplierId = tempSupplier;
+            await postData(endpoints.submitDSD, data);
+         } else if (entryItem.type === "RTV") {
+            data.reason = tempReason;
+            data.supplierId = tempSupplier;
+            await postData(endpoints.submitRTV, data);
+         }
 
-      navigation.goBack();
+         // navigate back to listing page
+         navigation.goBack();
+      } catch (error) {
+         console.log(error);
+      }
    }
 
    return (
@@ -1567,6 +1562,7 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
    // FAB Group States and Properties
    const [state, setState] = useState({ open: false });
    const { open } = state;
+   const { getData } = useContext(CredentialsContext);
 
    // Additional States and Functions
    const navigation = useNavigation();
