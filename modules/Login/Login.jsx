@@ -24,9 +24,9 @@ export default function Login() {
       }
    }
 
-   const [username, setUsername] = useState("");
-   const [password, setPassword] = useState("");
-   const [store, setStore] = useState("");
+   const [username, setUsername] = useState("monikakumari103@gmail.com");
+   const [password, setPassword] = useState("abc123");
+   const [store, setStore] = useState("Pacific Dwarka");
 
    return (
       <KeyboardAvoidingView

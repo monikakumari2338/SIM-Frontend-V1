@@ -693,16 +693,34 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
          }
       */
 
-      const requestBody = {
+      const requestBodyAd = {
          id: entryItem.id,
          reason: tempReason,
          category: "Sportswear",
          items: tempItems.map(({ sku, upc, qty }) => ({ sku, upc, qty })),
       };
+      const requestBodySc = {
+         id: entryItem.id,
+         reason: tempReason,
+         category: "Sportswear",
+         items: tempItems.map(({ sku, upc }) => ({ sku, upc })),
+      };
 
       try {
-         console.log("ADD SC", JSON.stringify(requestBody));
-         await postData(endpoints.addItemsToSc, requestBody);
+         console.log(entryItem);
+         // use postData conditionally based on the subType of entryItem
+         switch (entryItem.subType) {
+            case "AD":
+               await postData(endpoints.addItemsToAd, requestBodyAd);
+               break;
+            case "SC":
+               await postData(endpoints.addItemsToSc, requestBodySc);
+               break;
+            default:
+               // throw an error if the subType is not recognized
+               throw new Error("Unknown subType for Stock Count");
+         }
+
          Toast.show({
             type: "success",
             text1: "Success",

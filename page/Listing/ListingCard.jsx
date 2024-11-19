@@ -130,6 +130,7 @@ export default function ListingCard({ item, refreshListingData }) {
    async function navigateToItemsSc() {
       const response = await getData(endpoints.fetchScItems + `${item.id}`);
       response.type = "SC";
+      response.subType = "AD";
       navigation.navigate("SC Items", {
          entryItem: response,
       });

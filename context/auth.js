@@ -9,6 +9,7 @@ const userName = "Monika";
 const password = "abc123";
 const showToken = true;
 const prettify = true;
+const showData = true;
 
 // Function to retrieve the token
 async function getToken() {
@@ -18,10 +19,6 @@ async function getToken() {
          const { accessToken } = await handleLogin();
          token = accessToken;
       }
-      if (showToken) {
-         console.log("Token:", token);
-      }
-
       return token;
    } catch (error) {
       console.error("Failed to get the token", error);
@@ -85,13 +82,15 @@ api.interceptors.request.use(
 async function getData(endpoint) {
    try {
       const response = await api.get(endpoint);
-      console.log("GET:", endpoint);
-      if (prettify) {
-         console.log(JSON.stringify(response.data, null, 2));
-      } else {
-         console.log(response.data);
+      if (showData) {
+         console.log("GET:", endpoint);
+         if (prettify) {
+            console.log(JSON.stringify(response.data, null, 2));
+         } else {
+            console.log(response.data);
+         }
+         console.log();
       }
-      console.log();
       return response.data;
    } catch (error) {
       console.error(
@@ -105,13 +104,15 @@ async function getData(endpoint) {
 async function postData(endpoint, data = {}) {
    try {
       const response = await api.post(endpoint, data);
-      console.log("POST:", endpoint);
-      if (prettify) {
-         console.log(JSON.stringify(response.data, null, 2));
-      } else {
-         console.log(response.data);
+      if (showData) {
+         console.log("POST:", endpoint);
+         if (prettify) {
+            console.log(JSON.stringify(response.data, null, 2));
+         } else {
+            console.log(response.data);
+         }
+         console.log();
       }
-      console.log();
       return response.data;
    } catch (error) {
       console.error(
