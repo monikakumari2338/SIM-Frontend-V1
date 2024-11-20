@@ -1,38 +1,23 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const CredentialsContext = createContext();
+export const AuthContext = createContext();
 
-export const CredentialsProvider = ({ children }) => {
-   const [storeName, setStoreName] = useState("");
-   const [email, setEmail] = useState("");
-   const [password, setPassword] = useState("");
-   const [userName, setUserName] = useState("Monika");
-
-   const baseURL = "http://10.0.2.2:9029";
-
-   const showToken = true;
+export const AuthProvider = ({ children }) => {
    const prettify = true;
 
-   // Function to retrieve the token
-   async function getToken() {
-      try {
-         let token = await AsyncStorage.getItem("token");
-         if (!token) {
-            const { accessToken } = await handleLogin();
-            token = accessToken;
-         }
-         if (showToken) {
-            console.log("Token:", token);
-         }
+   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-         return token;
-      } catch (error) {
-         console.error("Failed to get the token", error);
-         throw error;
-      }
-   }
+   const [email, setEmail] = useState("");
+   const [password, setPassword] = useState("");
+   const [storeName, setStoreName] = useState("");
+   const [user, setuser] = useState("");
+
+   const baseURL = "http://10.0.2.2:9029";
+   const api = axios.create({
+      baseURL,
+   });
 
    // Function to handle login, store token, and retrieve token
    async function handleLogin(email, password, storeName) {
@@ -52,6 +37,8 @@ export const CredentialsProvider = ({ children }) => {
 
          if (!accessToken) {
             throw new Error("No access token in response");
+         } else {
+            console.log("Access token:", accessToken);
          }
 
          await AsyncStorage.setItem("token", accessToken);
@@ -59,6 +46,12 @@ export const CredentialsProvider = ({ children }) => {
          setEmail(email);
          setPassword(password);
          setStoreName(storeName);
+         setuser(response.data.user);
+
+         // timeout for 1 sec then set isAuthenticated to true
+         setTimeout(() => {
+            setIsAuthenticated(true);
+         }, 500);
 
          return { accessToken };
       } catch (error) {
@@ -67,32 +60,41 @@ export const CredentialsProvider = ({ children }) => {
       }
    }
 
-   // Axios instance with interceptor to add the token to headers
-   const api = axios.create({
-      baseURL,
-   });
-   api.interceptors.request.use(
-      async (config) => {
-         try {
-            const token = await getToken();
-            if (token) {
-               config.headers.Authorization = `Bearer ${token}`;
+   // Function to handle logout
+   async function handleLogout() {
+      try {
+         await AsyncStorage.removeItem("token"); // Clear the token
+         setIsAuthenticated(false);
+      } catch (error) {
+         console.error("Failed to logout", error);
+      }
+   }
+
+   function setAuthorizationHeader() {
+      api.interceptors.request.use(
+         async (config) => {
+            try {
+               const token = await AsyncStorage.getItem("token");
+               if (token) {
+                  config.headers.Authorization = `Bearer ${token}`;
+               }
+               return config;
+            } catch (error) {
+               console.error("Failed to set Authorization header", error);
+               return Promise.reject(error);
             }
-            return config;
-         } catch (error) {
-            console.error("Failed to set Authorization header", error);
+         },
+         (error) => {
+            console.error("Request interceptor error", error);
             return Promise.reject(error);
          }
-      },
-      (error) => {
-         console.error("Request interceptor error", error);
-         return Promise.reject(error);
-      }
-   );
+      );
+   }
 
    // Functions to fetch data from the API
    async function getData(endpoint) {
       try {
+         setAuthorizationHeader();
          const response = await api.get(endpoint);
          console.log("GET:", endpoint);
          if (prettify) {
@@ -116,6 +118,7 @@ export const CredentialsProvider = ({ children }) => {
          const response = await api.post(endpoint, data);
          console.log("POST:", endpoint);
          if (prettify) {
+            console.log(JSON.stringify(data, null, 2));
             console.log(JSON.stringify(response.data, null, 2));
          } else {
             console.log(response.data);
@@ -178,22 +181,18 @@ export const CredentialsProvider = ({ children }) => {
    }
 
    return (
-      <CredentialsContext.Provider
+      <AuthContext.Provider
          value={{
             // Values
-
             storeName,
-            setStoreName,
             email,
-            setEmail,
             password,
-            setPassword,
-            userName,
-            setUserName,
+            user,
+            isAuthenticated,
 
             // Functions
-
             handleLogin,
+            handleLogout,
             getData,
             postData,
             deleteData,
@@ -201,6 +200,6 @@ export const CredentialsProvider = ({ children }) => {
          }}
       >
          {children}
-      </CredentialsContext.Provider>
+      </AuthContext.Provider>
    );
 };

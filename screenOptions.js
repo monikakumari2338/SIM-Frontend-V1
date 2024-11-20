@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
       fontFamily: "Montserrat-Bold",
       fontSize: 14,
       color: "#fff",
-      // marginLeft: -20,  ---> for left align
       marginBottom: 3,
    },
 });

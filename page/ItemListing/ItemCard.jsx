@@ -13,8 +13,6 @@ import Toast from "react-native-toast-message";
       - ProofImagesOverlay
 */
 const completedStatuses = [
-   "Complete",
-   "complete",
    "Completed",
    "Delivered",
    "New Request",
@@ -24,20 +22,22 @@ const completedStatuses = [
    "Dispatched",
 ];
 
-export default function ItemCard({ item, status, recountStatus, deleteItem }) {
+export default function ItemCard({
+   item,
+   subType,
+   status,
+   recountStatus,
+   deleteItem,
+}) {
    // States and Constants
    const [quantityOverlay, setQuantityOverlay] = useState(false);
    const [proofImagesOverlay, setProofImagesOverlay] = useState(false);
 
-   // Is the entry item complete?
-   // For SC, both status and recountStatus must be completed
-   // For other types, only status must be completed
    const isComplete =
       item.type === "SC"
          ? completedStatuses.includes(status) &&
-           recountStatus?.includes("Completed")
+           recountStatus?.includes(["Completed"])
          : completedStatuses.includes(status);
-
    const partiallyAccepted = status === "Partially Accepted";
 
    // Functions
@@ -207,81 +207,23 @@ export default function ItemCard({ item, status, recountStatus, deleteItem }) {
          </View>
 
          {/* Quantity Update Overlay */}
-         {!isComplete &&
-            {
-               IA: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               DSD: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               PO: (
-                  <QuantityUpdateOverlay2
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               RTV: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               TSF: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               TSFIN: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               TSFOUT: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-               SC: (
-                  <QuantityUpdateOverlay
-                     {...{
-                        item,
-                        quantityOverlay,
-                        setQuantityOverlay,
-                     }}
-                  />
-               ),
-            }[item.type]}
+         {!isComplete && item.type === "PO" ? (
+            <QuantityUpdateOverlay2
+               {...{
+                  item,
+                  quantityOverlay,
+                  setQuantityOverlay,
+               }}
+            />
+         ) : (
+            <QuantityUpdateOverlay
+               {...{
+                  item,
+                  quantityOverlay,
+                  setQuantityOverlay,
+               }}
+            />
+         )}
 
          {/* Proof Images Overlay */}
          {isComplete && (

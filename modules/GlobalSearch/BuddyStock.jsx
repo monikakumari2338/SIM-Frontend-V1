@@ -4,7 +4,7 @@ import { Divider, Icon, Image } from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
 import { SearchBar } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function BuddyStock({ route }) {
    const { currentItem, setSelectedStore } = route.params;
@@ -12,7 +12,7 @@ export default function BuddyStock({ route }) {
    const [fullStores, setFullStores] = useState([]);
    const [filteredStores, setFilteredStores] = useState([]);
    const [searchTerm, setSearchTerm] = useState("");
-   const { storeName, getData } = useContext(CredentialsContext);
+   const { storeName, getData } = useContext(AuthContext);
 
    async function fetchAllBuddyStores() {
       try {

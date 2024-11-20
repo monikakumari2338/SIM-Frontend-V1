@@ -8,7 +8,7 @@ export function AsnCard({ item, entryItem }) {
    const navigation = useNavigation();
    const statusBg = {
       Pending: "crimson",
-      Complete: "green",
+      Completed: "green",
       Saved: "orange",
    };
 
@@ -126,7 +126,7 @@ export function AsnCard2({ item, entryItem }) {
          bg: "crimson",
          txt: "white",
       },
-      Complete: {
+      Completed: {
          bg: "green",
          txt: "white",
       },

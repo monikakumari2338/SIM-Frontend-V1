@@ -387,7 +387,7 @@ function StatusFilterBottomSheet({
          },
       },
       Completed: {
-         name: "Complete",
+         name: "Completed",
          icon: {
             name: "progress-check",
             type: "material-community",

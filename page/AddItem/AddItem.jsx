@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, Image, FlatList, Alert } from "react-native";
 import { Button, Input, Overlay } from "@rneui/themed";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { endpoints } from "../../context/endpoints";
 
 export default function AddItem({ route }) {
    // States and vars
    const { type, tempItems, setTempItems, tempSupplier, poItem } = route.params;
    const [suggestions, setSuggestions] = useState(null);
-   const { getData, storeName } = useContext(CredentialsContext);
+   const { getData, storeName } = useContext(AuthContext);
 
    // Primary Search Function
    async function searchItems(searchStr) {

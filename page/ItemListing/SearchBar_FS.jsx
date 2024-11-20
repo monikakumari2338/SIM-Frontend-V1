@@ -11,7 +11,7 @@ import Toast from "react-native-toast-message";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import XLSX from "xlsx";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function SearchBar_FS({ entryItem, tempItems, setTempItems }) {
    // States and Vars
@@ -19,7 +19,7 @@ export default function SearchBar_FS({ entryItem, tempItems, setTempItems }) {
    const [searchStr, setSearchStr] = useState("");
 
    // Creds
-   const { getData } = useContext(CredentialsContext);
+   const { getData } = useContext(AuthContext);
 
    // Search Application
    useEffect(() => {

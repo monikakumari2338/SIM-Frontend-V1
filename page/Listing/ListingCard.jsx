@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { endpoints } from "../../context/endpoints";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { FunctionContext } from "../../context/FunctionContext";
 
 export default function ListingCard({ item, refreshListingData }) {
@@ -12,7 +12,7 @@ export default function ListingCard({ item, refreshListingData }) {
    const navigation = useNavigation();
 
    // Creds
-   const { getData } = useContext(CredentialsContext);
+   const { getData } = useContext(AuthContext);
    // Function Context
    const { handleDelete } = useContext(FunctionContext);
 
@@ -36,16 +36,8 @@ export default function ListingCard({ item, refreshListingData }) {
    // Progress Chip to denote the status of the entry item
    function ProgressChip({ status }) {
       const chipData = {
-         Complete: {
-            color: "#4CAF50", // Green
-            textColor: "white",
-         },
          Completed: {
             color: "#4CAF50", // Green
-            textColor: "white",
-         },
-         complete: {
-            color: "#4CAF50",
             textColor: "white",
          },
          "In Progress": {
@@ -96,6 +88,10 @@ export default function ListingCard({ item, refreshListingData }) {
             color: "#4CAF50",
             textColor: "#fff",
          },
+         null: {
+            color: "#FFEB3B",
+            textColor: "#212121",
+         },
       };
 
       return (
@@ -134,16 +130,8 @@ export default function ListingCard({ item, refreshListingData }) {
    // Separate function to handle the Stock Count navigation as the listing item does not have sufficient data
    async function navigateToItemsSc() {
       const response = await getData(endpoints.fetchScItems + `${item.id}`);
-      response.type = "SC";
       navigation.navigate("SC Items", {
          entryItem: response,
-      });
-   }
-
-   // Navigation function for Listing Card, navigates on basis of TYPE and STATUS
-   function navigateToItems() {
-      navigation.navigate(redirectionMap[item.type][item.status], {
-         entryItem: item,
       });
    }
 
@@ -152,17 +140,17 @@ export default function ListingCard({ item, refreshListingData }) {
       IA: {
          "In Progress": "IA Items",
          Saved: "IA Items",
-         Complete: "IA Summary",
+         Completed: "IA Summary",
       },
       DSD: {
          "In Progress": "DSD Items",
          Saved: "DSD Items",
-         Complete: "DSD Summary",
+         Completed: "DSD Summary",
       },
       PO: {
          "In Progress": "ASN List",
          Pending: "ASN List",
-         Complete: "ASN List",
+         Completed: "ASN List",
       },
       TSFIN: {
          // Transfer Items
@@ -177,7 +165,7 @@ export default function ListingCard({ item, refreshListingData }) {
 
          // Transfer Summary
          Pending: "Transfer Summary",
-         Complete: "Transfer Summary",
+         Completed: "Transfer Summary",
       },
       TSFOUT: {
          // Transfer Items
@@ -192,13 +180,13 @@ export default function ListingCard({ item, refreshListingData }) {
 
          // Transfer Summary
          Pending: "Transfer Summary",
-         Complete: "Transfer Summary",
+         Completed: "Transfer Summary",
       },
       SC: {
          New: "SC Items",
-         pending: "SC Items",
+         Pending: "SC Items",
          "In Progress": "SC Items",
-         complete: "SC Items",
+         Completed: "SC Items",
       },
       RTV: {
          "In Progress": "RTV Items",
@@ -206,6 +194,13 @@ export default function ListingCard({ item, refreshListingData }) {
          Dispatched: "RTV Summary",
       },
    };
+   // Navigation function for Listing Card, navigates on basis of TYPE and STATUS
+   function navigateToItems() {
+      navigation.navigate(redirectionMap[item.type][item.status], {
+         entryItem: item,
+      });
+   }
+
    // module-specific fields
    const fieldMap = {
       IA: {
@@ -290,10 +285,7 @@ export default function ListingCard({ item, refreshListingData }) {
          </View>
 
          {/* Right pressable counts based on type */}
-         <Pressable
-            onPress={item.type === "SC" ? navigateToItemsSc : navigateToItems}
-            style={styles.cardRight}
-         >
+         <Pressable onPress={navigateToItems} style={styles.cardRight}>
             <View
                style={{
                   flexDirection: "column",

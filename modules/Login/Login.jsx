@@ -9,25 +9,23 @@ import {
    KeyboardAvoidingView,
    Platform,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
-   const navigation = useNavigation();
-   const { handleLogin } = useContext(CredentialsContext);
+   const { handleLogin } = useContext(AuthContext);
 
-   async function loginAndNavigate() {
+   // Only for the login page, handling input
+   const [email, setEmail] = useState("monikakumari103@gmail.com");
+   const [password, setPassword] = useState("abc123");
+   const [store, setStore] = useState("Pacific Dwarka");
+
+   async function attemptLogin() {
       try {
-         await handleLogin(username, password, store);
-         navigation.navigate("Dashboard");
+         await handleLogin(email, password, store);
       } catch (error) {
          console.log(error);
       }
    }
-
-   const [username, setUsername] = useState("");
-   const [password, setPassword] = useState("");
-   const [store, setStore] = useState("");
 
    return (
       <KeyboardAvoidingView
@@ -48,15 +46,15 @@ export default function Login() {
             </View>
 
             <View>
-               {/* Username */}
+               {/* user */}
                <View style={styles.infoContainer}>
-                  <Text style={styles.label}>Username</Text>
+                  <Text style={styles.label}>User</Text>
                   <TextInput
                      style={styles.input}
                      autoComplete="email"
                      placeholder={"Enter your email"}
                      placeholderTextColor={"#f0f0f0"}
-                     onChangeText={setUsername}
+                     onChangeText={setEmail}
                   />
                </View>
 
@@ -82,16 +80,15 @@ export default function Login() {
                      onChangeText={setStore}
                   />
                </View>
-
-               {/* Login Button */}
-               <Button
-                  buttonStyle={styles.loginButton}
-                  titleStyle={styles.loginButtonTitle}
-                  onPress={loginAndNavigate}
-               >
-                  Login
-               </Button>
             </View>
+            {/* Login Button */}
+            <Button
+               buttonStyle={styles.loginButton}
+               titleStyle={styles.loginButtonTitle}
+               onPress={attemptLogin}
+            >
+               Login
+            </Button>
          </View>
       </KeyboardAvoidingView>
    );
@@ -108,7 +105,7 @@ const styles = StyleSheet.create({
       height: 80,
    },
    loginContainer: {
-      flex: 0.8,
+      flex: 1,
       justifyContent: "space-evenly",
       alignItems: "center",
    },
@@ -125,8 +122,8 @@ const styles = StyleSheet.create({
       color: "white",
    },
    label: {
-      fontSize: 15,
-      fontFamily: "Montserrat-Bold",
+      fontSize: 17,
+      fontFamily: "Montserrat-Regular",
       color: "white",
       marginBottom: 10,
       marginLeft: 5,
@@ -138,11 +135,12 @@ const styles = StyleSheet.create({
       width: 250,
       height: 50,
       borderRadius: 5,
-      borderWidth: 0.3,
+      borderWidth: 0.5,
       borderColor: "silver",
       padding: 10,
-      fontFamily: "Montserrat-Regular",
+      fontFamily: "Montserrat-Bold",
       fontSize: 15,
+      textAlign: "center",
       color: "white",
    },
    loginButton: {
@@ -152,7 +150,6 @@ const styles = StyleSheet.create({
       backgroundColor: "#4A99E2",
       justifyContent: "center",
       alignItems: "center",
-      marginTop: 50,
    },
    loginButtonTitle: {
       fontFamily: "Montserrat-Bold",

@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, Image, FlatList } from "react-native";
 import { Divider } from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
 import { useNavigation } from "@react-navigation/native";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function ItemStock({ route }) {
    const { item } = route.params;
@@ -23,7 +23,7 @@ export default function ItemStock({ route }) {
    const diffStore = selectedStore !== storeName;
    const [searchTerm, setSearchTerm] = useState("");
    // Creds
-   const { getData, storeName } = useContext(CredentialsContext);
+   const { getData, storeName } = useContext(AuthContext);
 
    // Sync Functions
    function changeSize(size) {

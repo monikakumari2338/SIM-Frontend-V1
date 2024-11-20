@@ -1,12 +1,12 @@
 import { createContext, useContext } from "react";
-import { CredentialsContext } from "./AuthContext";
+import { AuthContext } from "./AuthContext";
 import { endpoints } from "./endpoints";
 
 export const FunctionContext = createContext();
 
 export const FunctionProvider = ({ children }) => {
-   const { getData, postData, deleteData, storeName, userName } =
-      useContext(CredentialsContext);
+   const { getData, postData, deleteData, storeName, user } =
+      useContext(AuthContext);
 
    async function fetchData(type) {
       switch (type) {
@@ -32,21 +32,15 @@ export const FunctionProvider = ({ children }) => {
    async function createEntry(type) {
       switch (type) {
          case "IA":
-            return await postData(
-               endpoints.createIA + `${storeName}/${userName}`
-            );
+            return await postData(endpoints.createIA + `${storeName}/${user}`);
          case "DSD":
-            return await postData(
-               endpoints.createDSD + `${storeName}/${userName}`
-            );
+            return await postData(endpoints.createDSD + `${storeName}/${user}`);
          case "TSFIN":
             return await postData(
-               endpoints.createTsf + `${storeName}/${userName}/Ambience Mall`
+               endpoints.createTsf + `${storeName}/${user}/Ambience Mall`
             );
          case "RTV":
-            return await postData(
-               endpoints.createRtv + `${storeName}/${userName}`
-            );
+            return await postData(endpoints.createRtv + `${storeName}/${user}`);
          default:
             console.error("Invalid type for creating an entry");
       }

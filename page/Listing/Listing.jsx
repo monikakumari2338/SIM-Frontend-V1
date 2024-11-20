@@ -23,7 +23,7 @@ import SearchBar from "./SearchBar_FS";
 import { format } from "date-fns";
 import { endpoints } from "../../context/endpoints";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import { FunctionContext } from "../../context/FunctionContext";
 
 export default function ListingPage({ type }) {
@@ -34,8 +34,7 @@ export default function ListingPage({ type }) {
    // Theme Context
    const { theme } = useTheme();
    // Creds
-   const { getData, postData, storeName, userName } =
-      useContext(CredentialsContext);
+   const { getData, postData, storeName } = useContext(AuthContext);
    // Function Context
    const { fetchData, createEntry } = useContext(FunctionContext);
 
@@ -175,7 +174,7 @@ function TsfSupplierOverlay({ tsfSupplierOverlay, setSupplierOverlay }) {
    const navigation = useNavigation();
    const [suggestions, setSuggestions] = useState([]);
    const [tsfSupplier, setTsfSupplier] = useState("");
-   const { postData } = useContext(CredentialsContext);
+   const { postData } = useContext(AuthContext);
 
    // Functions
    async function handleSupplierIdChange(text) {
@@ -221,7 +220,7 @@ function TsfSupplierOverlay({ tsfSupplierOverlay, setSupplierOverlay }) {
    async function handleCreateTsf(tsfSupplier) {
       try {
          const response = await postData(
-            `${endpoints.createTsf}${storeName}/${userName}/${tsfSupplier}`
+            `${endpoints.createTsf}${storeName}/${user}/${tsfSupplier}`
          );
          setSupplierOverlay(false);
          navigation.navigate("Transfer Items", { entryItem: response });
@@ -304,6 +303,8 @@ function TsfSupplierOverlay({ tsfSupplierOverlay, setSupplierOverlay }) {
 }
 
 function DateFilterBottomSheet({ scDateOverlay, setScDateOverlay }) {
+   const { postData, getData, storeName } = useContext(AuthContext);
+
    // Date Range Picker Component
    function DateRangePicker() {
       // States and Vars

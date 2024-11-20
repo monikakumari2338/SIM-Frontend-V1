@@ -6,7 +6,7 @@ import backgroundImg from "../../assets/bg3.jpg";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import XLSX from "xlsx";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 // Custom Components
 import { endpoints } from "../../context/endpoints";
@@ -20,7 +20,7 @@ export default function AsnItems({ route }) {
    // States and consts
    const { poItem, asnItem } = route.params;
    const { compareStructure, getData, postData, storeName } =
-      useContext(CredentialsContext);
+      useContext(AuthContext);
 
    let asnId, asnStatus;
    // if asnItem is not null, then load the asnId and asnStatus
@@ -421,7 +421,7 @@ export default function AsnItems({ route }) {
                <ItemCard {...{ item, status: asnStatus, deleteItem }} />
             )}
             ListHeaderComponent={
-               asnStatus !== "Complete" && (
+               asnStatus !== "Completed" && (
                   <View
                      style={{
                         flexDirection: "row",
@@ -463,7 +463,7 @@ export default function AsnItems({ route }) {
          />
 
          {/* FAB to add items */}
-         {asnStatus !== "Complete" && (
+         {asnStatus !== "Completed" && (
             <Portal>
                <FAB.Group
                   style={{ marginBottom: 70 }}

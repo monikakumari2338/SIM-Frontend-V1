@@ -32,13 +32,13 @@ import { useIsFocused } from "@react-navigation/native";
 import { AsnCard2 } from "../../modules/PurchaseOrder/AsnCard";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Sharing from "expo-sharing";
-import { CredentialsContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function EntryItemDetailPage({ route }) {
    const navigation = useNavigation();
 
    // Creds
-   const { getData, postData, storeName } = useContext(CredentialsContext);
+   const { getData, postData, storeName } = useContext(AuthContext);
 
    // Extract the entryItem from the route params
    const { entryItem } = route.params;
@@ -50,8 +50,6 @@ export default function EntryItemDetailPage({ route }) {
    const [tempSupplier, setTempSupplier] = useState(null);
    const [headerItem, setHeaderItem] = useState({});
    const completedStatuses = [
-      "Complete",
-      "complete",
       "Completed",
       "Delivered",
       "New Request",
@@ -61,7 +59,7 @@ export default function EntryItemDetailPage({ route }) {
       "Dispatched",
    ];
    const isComplete = completedStatuses.includes(status);
-   const isRecounted = entryItem.recountStatus === "complete";
+   const isRecounted = entryItem.recountStatus === "Completed";
 
    // fetch the PO header, needs to be updated on FOCUS
    async function getPoHeader() {
@@ -80,7 +78,6 @@ export default function EntryItemDetailPage({ route }) {
             break;
          case "DSD":
             response = await getData(endpoints.fetchItemsDSD + entryItem.id);
-            console.log("ITEMS:", response.items);
             setTempItems(response.items);
             setTempSupplier(response.supplierId);
             break;
@@ -261,6 +258,7 @@ export default function EntryItemDetailPage({ route }) {
                            <ItemCard
                               {...{
                                  item,
+                                 subType: entryItem.subType,
                                  status,
                                  recountStatus: entryItem.recountStatus,
                                  deleteItem,
@@ -272,6 +270,7 @@ export default function EntryItemDetailPage({ route }) {
                            <ItemCard
                               {...{
                                  item,
+                                 subType: null,
                                  status,
                                  recountStatus: null,
                                  deleteItem,
@@ -295,7 +294,7 @@ export default function EntryItemDetailPage({ route }) {
                      />
 
                      {/* IA/DSD: Button Group */}
-                     {status !== "Complete" &&
+                     {status !== "Completed" &&
                         type !== "PO" &&
                         type !== "TSFIN" &&
                         type !== "TSFOUT" && (
@@ -312,7 +311,7 @@ export default function EntryItemDetailPage({ route }) {
                         )}
 
                      {/* FAB Group */}
-                     {status === "Complete" && type !== "PO" && (
+                     {status === "Completed" && type !== "PO" && (
                         <SearchBar
                            {...{ entryItem, tempItems, setTempItems }}
                         />
@@ -445,7 +444,7 @@ export function DetailsTab({
 }) {
    // Function for fetching the TSF header
    const [tsfHeader, setTsfHeader] = useState([]);
-   const { getData } = useContext(CredentialsContext);
+   const { getData } = useContext(AuthContext);
    async function fetchTsfHeader() {
       const response = await getData(endpoints.fetchItemsTsf + entryItem.id);
       return [
@@ -594,10 +593,14 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
    // States and vars
    const hasItems = tempItems.length > 0;
    const isStockCount = entryItem.type === "SC";
+   const toRecount =
+      entryItem.status === "Completed" && entryItem.recountStatus === "Pending";
    const isRecounted = entryItem.recountStatus === "Completed";
    const [proofOverlay, setProofOverlay] = useState(false);
    const navigation = useNavigation();
-   const { postData } = useContext(CredentialsContext);
+   const { postData } = useContext(AuthContext);
+
+   console.log("Entry Item details:", entryItem);
 
    // Functions
    async function handleSave() {
@@ -663,8 +666,12 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
       };
 
       try {
-         console.log("Drafting SC:", requestBody);
-         await postData(endpoints.draftSc, requestBody);
+         console.log("SUBTYPE", entryItem.subType);
+         if (entryItem.subType === "AD") {
+            await postData(endpoints.draftSc + "adhoc", requestBody);
+         } else {
+            await postData(endpoints.draftSc + "system", requestBody);
+         }
          Toast.show({
             type: "success",
             text1: "Success",
@@ -682,32 +689,24 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
       }
    }
    async function addItemsToSc() {
-      // Example Request Body
-      /*
-         {
-            "id": "string",
-            "reason": "string",
-            "category": "string",
-            "items": [
-               {
-                  "sku": "string",
-                  "upc": "string",
-                  "qty": 0
-               }
-            ]
-         }
-      */
-
-      const requestBody = {
+      const requestBodyAd = {
          id: entryItem.id,
          reason: tempReason,
          category: "Sportswear",
          items: tempItems.map(({ sku, upc, qty }) => ({ sku, upc, qty })),
       };
+      // remove the qty from each item, otherwise same as requestBodyAd
+      const requestBodySc = {
+         id: entryItem.id,
+         items: tempItems.map(({ sku, upc, qty }) => ({ sku, upc, qty })),
+      };
 
       try {
-         console.log("ADD SC", JSON.stringify(requestBody));
-         await postData(endpoints.addItemsToSc, requestBody);
+         if (entryItem.subType === "AD") {
+            await postData(endpoints.addItemsToAd, requestBodyAd);
+         } else {
+            await postData(endpoints.addItemsToSc, requestBodySc);
+         }
          Toast.show({
             type: "success",
             text1: "Success",
@@ -794,7 +793,7 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
                   onPress={draftSc}
                />
                <Button
-                  disabled={!hasItems || isRecounted}
+                  disabled={!hasItems || entryItem.status === "Completed"}
                   title={entryItem.status === "Completed" ? "Re-Count" : "Add"}
                   titleStyle={styles.buttonTitle}
                   icon={{
@@ -882,7 +881,7 @@ function TsfButtonGroup({ entryItem, tempItems, tempReason }) {
       The buttons are also conditionally disabled based on the status of the entry item.
    */
 
-   const { postData } = useContext(CredentialsContext);
+   const { postData } = useContext(AuthContext);
 
    // Functions for Store 1
    async function handleRequest(startDate, endDate) {
@@ -1245,7 +1244,7 @@ function ReasonsOverlay({
    // States and vars
    const [reasons, setReasons] = useState([]);
    const navigation = useNavigation();
-   const { getData } = useContext(CredentialsContext);
+   const { getData } = useContext(AuthContext);
 
    // Functions
    async function fetchReasons() {
@@ -1337,7 +1336,7 @@ function SupplierOverlay({
    const [suggestions, setSuggestions] = useState([]);
    const [supplierId, setSupplierId] = useState("");
    const navigation = useNavigation();
-   const { getData } = useContext(CredentialsContext);
+   const { getData } = useContext(AuthContext);
 
    async function handleSupplierIdChange(text) {
       try {
@@ -1464,29 +1463,35 @@ function ProofOverlay({
    setProofOverlay,
 }) {
    const navigation = useNavigation();
-   const [image, setImage] = useState("");
-   const { postData } = useContext(CredentialsContext);
+   const [image, setImage] = useState(null);
+   const { postData } = useContext(AuthContext);
 
    // Functions
    async function pickImage() {
-      const result = await ImagePicker.launchImageLibraryAsync({
-         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-         allowsEditing: true,
-         aspect: [1, 1],
-         quality: 1,
-      });
-      if (!result.canceled) {
-         setImage(result.uri);
+      try {
+         const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+         });
+         if (!result.canceled) {
+            console.log("IMAGE DATA:", result);
+            return result.assets[0].uri;
+         }
+      } catch (error) {
+         console.error("Error picking image:", error);
+         return null;
       }
    }
 
-   async function handleSubmit() {
+   async function handleSubmit(imageUri = null) {
       const data = {
          id: entryItem.id,
          totalSku: tempItems.reduce((acc, item) => acc + Number(item.qty), 0),
-         status: "Complete",
+         status: "Completed",
          items: tempItems,
-         imageData: image,
+         imageData: imageUri,
       };
 
       try {
@@ -1502,11 +1507,16 @@ function ProofOverlay({
             await postData(endpoints.submitRTV, data);
          }
 
-         // navigate back to listing page
+         // Navigate back to listing page
          navigation.goBack();
       } catch (error) {
-         console.log(error);
+         console.error("Error submitting data:", error);
       }
+   }
+
+   async function handlePickAndSubmit() {
+      const selectedImage = await pickImage(); // Wait for the image to be picked
+      await handleSubmit(selectedImage); // Pass the selected image URI to handleSubmit
    }
 
    return (
@@ -1529,7 +1539,10 @@ function ProofOverlay({
             Upload Proof
          </Text>
 
-         <Image source={uploadImage} style={{ width: 200, height: 200 }} />
+         <Image
+            source={image ? { uri: image } : uploadImage} // Show selected image or placeholder
+            style={{ width: 200, height: 200 }}
+         />
 
          <View
             style={{
@@ -1542,16 +1555,13 @@ function ProofOverlay({
                title="Upload"
                buttonStyle={[styles.button, { width: 80 }]}
                titleStyle={styles.buttonTitle}
-               onPress={() => {
-                  pickImage();
-                  handleSubmit();
-               }}
+               onPress={handlePickAndSubmit}
             />
             <Button
                title="Skip"
                buttonStyle={[styles.button, { width: 80 }]}
                titleStyle={styles.buttonTitle}
-               onPress={handleSubmit}
+               onPress={() => handleSubmit()} // Call handleSubmit without an image
             />
          </View>
       </Overlay>
@@ -1562,7 +1572,7 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
    // FAB Group States and Properties
    const [state, setState] = useState({ open: false });
    const { open } = state;
-   const { getData } = useContext(CredentialsContext);
+   const { getData } = useContext(AuthContext);
 
    // Additional States and Functions
    const navigation = useNavigation();

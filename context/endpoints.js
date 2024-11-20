@@ -61,8 +61,9 @@ const endpoints = {
    fetchScItems: "/stockcount/products/id/",
    fetchScReasons: "/stockcount/reasoncodes",
    fetchScEntry: "/stockcount/products/id/",
-   addItemsToSc: "/stockcount/add/AdhocProducts",
-   draftSc: "/stockcount/draft/SC/adhoc",
+   addItemsToSc: "/stockcount/update/count/recount",
+   addItemsToAd: "/stockcount/add/AdhocProducts",
+   draftSc: "/stockcount/draft/SC/",
    filterSc: "/stockcount/filter/SC/",
    sortSC: "/stockcount/sort/",
 
@@ -94,7 +95,8 @@ const endpoints = {
    // Dashboard
 
    fetchMyTasks: "/sim/dashboard/getMyTasks/",
-   fetchDiscrepancyTypeRatio: "/sim/dashboard/getCategoryWiseVariance/",
+   fetchVariance: "/sim/dashboard/getCategoryWiseVariance/",
+   fetchDiscrepancyTypeRatio: "/sim/dashboard/getInventoryDiscrepancyRatio/",
    fetchTransfersStatus: "/sim/dashboard/getTransferStatus/",
 };
 
