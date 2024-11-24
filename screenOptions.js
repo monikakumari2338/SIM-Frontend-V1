@@ -6,7 +6,7 @@ export const screenOptions = {
    headerStyle: {
       backgroundColor: "rgb(225,225,225)",
       elevation: 0,
-      height: 30,
+      height: 35,
    },
    headerBackImage: () => (
       <Icon
@@ -20,16 +20,20 @@ export const screenOptions = {
       <Text style={styles.headerTitle}>{children}</Text>
    ),
    headerBackground: () => (
-      <View style={{ backgroundColor: "#0492c2", height: 30 }} />
+      <View
+         style={{
+            backgroundColor: "#3e2f84",
+            height: 35,
+         }}
+      />
    ),
    headerTitleAlign: "center",
 };
 
 const styles = StyleSheet.create({
    headerTitle: {
-      fontFamily: "Montserrat-Bold",
-      fontSize: 14,
+      fontFamily: "Montserrat-Medium",
+      fontSize: 15,
       color: "#fff",
-      marginBottom: 3,
    },
 });

@@ -45,8 +45,6 @@ export default function Dashboard() {
                variance: responses[2] || [],
                transfer: responses[3] || [],
             });
-
-            console.log("Variance Data:", responses[2]);
          } catch (error) {
             console.error("Error fetching Task Card data:", error);
             setError(error);

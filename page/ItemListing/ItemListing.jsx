@@ -60,7 +60,15 @@ export default function EntryItemDetailPage({ route }) {
    ];
    const isComplete = completedStatuses.includes(status);
    const isRecounted = entryItem.recountStatus === "Completed";
-
+   /*
+      the button group is not for PO, TSFIN and TSFOUT
+      in case of IA, DSD and RTV, the button group is visible when status is not in completedStatuses
+      in case of SC, the button group is visible when status is in completedStatuses and recountStatus is not in completedStatuses
+   */
+   const showButtonGroup =
+      !["PO", "TSFIN", "TSFOUT"].includes(type) || // not PO, TSFIN or TSFOUT
+      (type === "SC" && isComplete && !isRecounted) || // SC and not recounted
+      (["IA", "DSD", "RTV"].includes(type) && !isComplete); // IA, DSD or RTV and not completed
    // fetch the PO header, needs to be updated on FOCUS
    async function getPoHeader() {
       const response = await getData(endpoints.fetchPo);
@@ -93,8 +101,6 @@ export default function EntryItemDetailPage({ route }) {
             setTempItems(response.items);
             setTempReason(response.reason);
             setTempSupplier(response.supplierId);
-            console.log("REASON:", response.reason);
-            console.log("SUPPLIER:", response.supplierId);
             break;
          case "TSFIN":
          case "TSFOUT":
@@ -221,6 +227,7 @@ export default function EntryItemDetailPage({ route }) {
       }
    }, [isFocused, tempReason, entryItem.reason, type]);
 
+   // supplier selection overlay, opens on FOCUS
    const [supplierOverlay, setSupplierOverlay] = useState(
       isFocused &&
          (type === "DSD" || type === "RTV") &&
@@ -258,6 +265,7 @@ export default function EntryItemDetailPage({ route }) {
                            <ItemCard
                               {...{
                                  item,
+                                 type: entryItem.type,
                                  subType: entryItem.subType,
                                  status,
                                  recountStatus: entryItem.recountStatus,
@@ -293,27 +301,24 @@ export default function EntryItemDetailPage({ route }) {
                         }}
                      />
 
-                     {/* IA/DSD: Button Group */}
-                     {status !== "Completed" &&
-                        type !== "PO" &&
-                        type !== "TSFIN" &&
-                        type !== "TSFOUT" && (
-                           <ButtonGroup
-                              {...{
-                                 entryItem,
-                                 tempItems,
-                                 tempReason,
-                                 setTempReason,
-                                 tempSupplier,
-                                 setTempSupplier,
-                              }}
-                           />
-                        )}
-
-                     {/* FAB Group */}
-                     {status === "Completed" && type !== "PO" && (
+                     {/* Search Bar for completed entries */}
+                     {type !== "PO" && isComplete && (
                         <SearchBar
                            {...{ entryItem, tempItems, setTempItems }}
+                        />
+                     )}
+
+                     {/* IA/DSD/SC/RTV: Button Group */}
+                     {showButtonGroup && (
+                        <ButtonGroup
+                           {...{
+                              entryItem,
+                              tempItems,
+                              tempReason,
+                              setTempReason,
+                              tempSupplier,
+                              setTempSupplier,
+                           }}
                         />
                      )}
 
@@ -593,14 +598,10 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
    // States and vars
    const hasItems = tempItems.length > 0;
    const isStockCount = entryItem.type === "SC";
-   const toRecount =
-      entryItem.status === "Completed" && entryItem.recountStatus === "Pending";
    const isRecounted = entryItem.recountStatus === "Completed";
    const [proofOverlay, setProofOverlay] = useState(false);
    const navigation = useNavigation();
    const { postData } = useContext(AuthContext);
-
-   console.log("Entry Item details:", entryItem);
 
    // Functions
    async function handleSave() {
@@ -666,7 +667,6 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
       };
 
       try {
-         console.log("SUBTYPE", entryItem.subType);
          if (entryItem.subType === "AD") {
             await postData(endpoints.draftSc + "adhoc", requestBody);
          } else {
@@ -780,6 +780,7 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
          {/* STOCK COUNT - Add & Save Button */}
          {isStockCount ? (
             <>
+               {/* Draft */}
                <Button
                   disabled={!hasItems || entryItem.status === "Completed"}
                   title="Draft"
@@ -792,8 +793,9 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
                   buttonStyle={[styles.button, { width: 100 }]}
                   onPress={draftSc}
                />
+               {/* Add */}
                <Button
-                  disabled={!hasItems || entryItem.status === "Completed"}
+                  disabled={!hasItems || isRecounted}
                   title={entryItem.status === "Completed" ? "Re-Count" : "Add"}
                   titleStyle={styles.buttonTitle}
                   icon={{
@@ -804,6 +806,7 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
                   buttonStyle={[styles.button, { width: 100 }]}
                   onPress={addItemsToSc}
                />
+               {/* Variance */}
                <Button
                   disabled={!isRecounted}
                   title="Variance"
@@ -1012,7 +1015,6 @@ function TsfButtonGroup({ entryItem, tempItems, tempReason }) {
       };
 
       try {
-         console.log("Processing request:", requestBody);
          await postData(endpoints.tsfAcceptance, requestBody);
 
          Toast.show({
@@ -1476,7 +1478,6 @@ function ProofOverlay({
             quality: 1,
          });
          if (!result.canceled) {
-            console.log("IMAGE DATA:", result);
             return result.assets[0].uri;
          }
       } catch (error) {
@@ -1660,7 +1661,6 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
                }
             }
 
-            // If errors exist, console.log and return
             if (errors.length > 0) {
                Alert.alert("Invalid data found", errors.join("\n"));
                Toast.show({
@@ -1743,7 +1743,6 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
                   const response = await getData(
                      `/dsd/get/supplier/product/${tempSupplier}/${item.SKU}/${storeName}`
                   );
-                  console.log("response :", response);
                   const foundItem = response.items ? response.items[0] : null;
 
                   if (!foundItem) {
@@ -1772,7 +1771,6 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
                }
             }
 
-            // If errors exist, console.log and return
             if (errors.length > 0) {
                Alert.alert("Invalid data found", errors.join("\n"));
                Toast.show({

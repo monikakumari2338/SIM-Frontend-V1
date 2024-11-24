@@ -92,8 +92,6 @@ export default function AsnItems({ route }) {
          asnDetails: convertedItems,
       };
 
-      console.log("Saving this info:", requestBody);
-
       try {
          let asnId = asnItem?.asnNumber;
          if (!asnId) {
@@ -244,10 +242,6 @@ export default function AsnItems({ route }) {
             asnNumber: asnId,
             purchaseOrderItemsdto: tempItems.map(convertToSubmitAsnDto),
          };
-         console.log(
-            "Submitting this info:",
-            JSON.stringify(submitRequestBody, null, 2)
-         );
          await postData(
             endpoints.submitAsnItems + storeName,
             submitRequestBody
@@ -269,8 +263,6 @@ export default function AsnItems({ route }) {
    }
    async function handleExcelUpload() {
       try {
-         console.log("Opening document picker...");
-
          const res = await DocumentPicker.getDocumentAsync({
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
          });
@@ -346,7 +338,6 @@ export default function AsnItems({ route }) {
                }
             }
 
-            // If errors exist, console.log and return
             if (errors.length > 0) {
                Alert.alert("Invalid data found", errors.join("\n"));
                Toast.show({
@@ -368,7 +359,6 @@ export default function AsnItems({ route }) {
             });
          }
       } catch (error) {
-         console.log("Error reading file:", error);
          Toast.show({
             type: "error",
             text1: "Error",

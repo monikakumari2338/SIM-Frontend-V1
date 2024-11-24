@@ -33,31 +33,14 @@ export default function SearchBar_FS({ entryItem, tempItems, setTempItems }) {
          }
 
          try {
-            const data0 = await getData(
+            const data = await getData(
                "/inventoryadjustment/search/item/inadjustments/sku/" +
                   id +
                   "/" +
                   searchStr
             );
-            // const data1 = await getData(
-            //    "/inventoryadjustment/search/item/inadjustments/name/" +
-            //       id +
-            //       "/" +
-            //       searchStr
-            // );
 
-            console.log(data0);
-            // console.log(data1);
-
-            // Merge the two arrays, remove duplicates based on SKU
-            // const data = data0.concat(data1);
-            // const uniqueData = Array.from(new Set(data.map((a) => a.sku))).map(
-            //    (sku) => {
-            //       return data.find((a) => a.sku === sku);
-            //    }
-            // );
-
-            setTempItems(data0);
+            setTempItems(data);
          } catch (error) {
             console.log(error);
          }

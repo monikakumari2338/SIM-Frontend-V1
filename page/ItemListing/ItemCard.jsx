@@ -24,6 +24,7 @@ const completedStatuses = [
 
 export default function ItemCard({
    item,
+   type,
    subType,
    status,
    recountStatus,
@@ -33,12 +34,33 @@ export default function ItemCard({
    const [quantityOverlay, setQuantityOverlay] = useState(false);
    const [proofImagesOverlay, setProofImagesOverlay] = useState(false);
 
+   /*
+   is the item complete (based on entryItems type and status)
+   for all item.types except "SC" , item is complete if status is in completedStatuses
+   for "SC", item is complete if status and recountStatus both are in completedStatuses
+
+   note: for SC, we don't have the type in the item object, so we are using the type prop passed to the ItemCard component
+   */
    const isComplete =
-      item.type === "SC"
+      type === "SC"
          ? completedStatuses.includes(status) &&
-           recountStatus?.includes(["Completed"])
+           completedStatuses.includes(recountStatus)
          : completedStatuses.includes(status);
+
+   // for transfers
    const partiallyAccepted = status === "Partially Accepted";
+
+   /* is the item deletable (based on entryItems type and subType)
+      for all item.types except "SC" , item is deletable if status is not in completedStatuses
+      
+      for "SC", it depends if the subType is "AD" or "SC"
+         if subType is "AD", item is deletable if status is not in completedStatuses
+         if subType is also "SC, item is not deletable
+   */
+   const isDeletable =
+      type === "SC"
+         ? subType === "AD" && !completedStatuses.includes(status)
+         : !completedStatuses.includes(status);
 
    // Functions
    function uploadProof() {
@@ -93,7 +115,7 @@ export default function ItemCard({
    return (
       <>
          <View style={styles.card}>
-            {!isComplete && !partiallyAccepted && (
+            {isDeletable && !partiallyAccepted && (
                <View style={styles.deleteIconContainer}>
                   <Icon
                      onPress={() => {
@@ -153,13 +175,13 @@ export default function ItemCard({
                   </Text>
                </Pressable>
 
-               {item.variance ? (
+               {type === "SC" ? (
                   // Variance in case of Stock Count items
                   <View
                      style={{
                         backgroundColor: "white",
                         borderRadius: 10,
-                        paddingHorizontal: 10,
+                        paddingHorizontal: 5,
                         flexDirection: "row",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -172,7 +194,7 @@ export default function ItemCard({
                            marginRight: 5,
                         }}
                      >
-                        VAR
+                        Variance
                      </Text>
                      <Text
                         style={{
@@ -180,7 +202,7 @@ export default function ItemCard({
                            fontSize: 13,
                         }}
                      >
-                        {item.variance}
+                        {item.variance || "N/A"}
                      </Text>
                   </View>
                ) : (
