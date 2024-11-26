@@ -1,4 +1,8 @@
 const endpoints = {
+   // Login
+
+   getAllStores: "/store/getallstores",
+
    // Inventory Adjustment
 
    fetchIa: "/inventoryadjustment/all/adjustments",

@@ -1,6 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import { Alert } from "react-native";
 
 export const AuthContext = createContext();
 
@@ -56,7 +58,7 @@ export const AuthProvider = ({ children }) => {
          return { accessToken };
       } catch (error) {
          console.error("Authentication failed", error);
-         throw error;
+         Alert.alert("Error", "Invalid credentials. Please try again.");
       }
    }
 

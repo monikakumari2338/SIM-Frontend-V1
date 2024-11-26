@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Image, Pressable, TextInput } from "react-native";
 import { Button, Icon, Overlay, Input, Divider } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
@@ -262,11 +262,14 @@ export default function ItemCard({
 }
 
 function QuantityUpdateOverlay({ item, quantityOverlay, setQuantityOverlay }) {
-   const [newQty, setNewQty] = useState("");
+   const [newQty, setNewQty] = useState(""); // Keeping your original state initialization
+   const [isSubmitting, setIsSubmitting] = useState(false); // For handling form submission state
 
    function isValidQty(qty) {
-      return !isNaN(qty) && parseInt(qty) > 0;
+      const parsedQty = Number(qty); // Using Number for parsing
+      return !isNaN(parsedQty) && parsedQty > 0;
    }
+
    function updateQuantity(item, newQty) {
       if (!isValidQty(newQty)) {
          Toast.show({
@@ -277,7 +280,8 @@ function QuantityUpdateOverlay({ item, quantityOverlay, setQuantityOverlay }) {
          return;
       }
 
-      if (item.expectedQty && newQty > item.expectedQty) {
+      const parsedQty = Number(newQty);
+      if (item.expectedQty && parsedQty > item.expectedQty) {
          Toast.show({
             type: "info",
             text1: "OVER-RECEIVED",
@@ -285,8 +289,20 @@ function QuantityUpdateOverlay({ item, quantityOverlay, setQuantityOverlay }) {
          });
       }
 
-      item.qty = newQty;
+      item.qty = parsedQty;
+      Toast.show({
+         type: "success",
+         text1: "Quantity Updated",
+         text2: `New quantity: ${parsedQty}`,
+      });
    }
+
+   const handleSubmit = () => {
+      setIsSubmitting(true);
+      updateQuantity(item, newQty);
+      setQuantityOverlay(false);
+      setIsSubmitting(false);
+   };
 
    return (
       <Overlay
@@ -320,8 +336,14 @@ function QuantityUpdateOverlay({ item, quantityOverlay, setQuantityOverlay }) {
             placeholder="Quantity"
             onChangeText={(text) => setNewQty(text)}
             keyboardType="numeric"
+            errorMessage={
+               !isValidQty(newQty) && newQty !== ""
+                  ? "Enter a valid quantity"
+                  : ""
+            }
          />
 
+         {/* Buttons */}
          <View style={{ flexDirection: "row" }}>
             <Button
                type="outline"
@@ -332,14 +354,12 @@ function QuantityUpdateOverlay({ item, quantityOverlay, setQuantityOverlay }) {
                onPress={() => setQuantityOverlay(false)}
             />
             <Button
-               title="Submit"
+               title={isSubmitting ? "Submitting..." : "Submit"}
                titleStyle={{ fontFamily: "Montserrat-Bold" }}
                buttonStyle={{ alignSelf: "center" }}
                containerStyle={{ margin: 10 }}
-               onPress={() => {
-                  updateQuantity(item, newQty);
-                  setQuantityOverlay(false);
-               }}
+               onPress={handleSubmit}
+               disabled={!isValidQty(newQty) || isSubmitting}
             />
          </View>
       </Overlay>

@@ -72,10 +72,11 @@ export default function EntryItemDetailPage({ route }) {
       IA: !isComplete,
       DSD: !isComplete,
       RTV: !isComplete,
-      SC: isComplete && !isRecounted,
+      SC: !isComplete || (isComplete && !isRecounted),
    };
    const showButtonGroup =
       moduleBtnGrp[type] !== undefined ? moduleBtnGrp[type] : true;
+
    // fetch the PO header, needs to be updated on FOCUS
    async function getPoHeader() {
       const response = await getData(endpoints.fetchPo);
