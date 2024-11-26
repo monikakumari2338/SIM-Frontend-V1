@@ -4,23 +4,18 @@ import { Icon } from "@rneui/themed";
 import { AuthContext } from "../context/AuthContext";
 
 export default function Header() {
-   const { storeName } = useContext(AuthContext);
+   const { storeName, user } = useContext(AuthContext);
 
    const details = [
       {
          icon: "storefront",
          iconType: "ionicons",
-         label:
-            "Store: " +
-            storeName
-               .split(" ")
-               .map((word) => word.charAt(0))
-               .join(""),
+         label: storeName,
       },
       {
          icon: "user",
          iconType: "feather",
-         label: "swastik-r",
+         label: user.split(" ")[0],
       },
    ];
 
@@ -35,12 +30,19 @@ export default function Header() {
          />
          <View style={styles.storeInfoContainer}>
             {details.map((detail, index) => (
-               <View key={index} style={{ flexDirection: "row" }}>
+               <View
+                  key={index}
+                  style={{
+                     flexDirection: "row",
+                     alignItems: "center",
+                  }}
+               >
                   <Icon
                      name={detail.icon}
                      type={detail.iconType}
-                     size={20}
+                     size={15}
                      color="white"
+                     style={{ marginRight: 5 }}
                   />
                   <Text style={styles.storeId}>{detail.label}</Text>
                </View>
@@ -55,12 +57,11 @@ const styles = StyleSheet.create({
       backgroundColor: "#112d4e",
       paddingHorizontal: 20,
       paddingTop: 30,
-      // marginTop: 20,
       flexDirection: "row",
       justifyContent: "space-between",
    },
    storeId: {
-      fontFamily: "Montserrat-Medium",
+      fontFamily: "Montserrat-Bold",
       color: "white",
       fontSize: 12,
    },

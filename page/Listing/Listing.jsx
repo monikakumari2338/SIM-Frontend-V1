@@ -25,6 +25,7 @@ import { endpoints } from "../../context/endpoints";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AuthContext } from "../../context/AuthContext";
 import { FunctionContext } from "../../context/FunctionContext";
+import { Alert } from "react-native";
 
 export default function ListingPage({ type }) {
    // Navigation
@@ -174,7 +175,7 @@ function TsfSupplierOverlay({ tsfSupplierOverlay, setSupplierOverlay }) {
    const navigation = useNavigation();
    const [suggestions, setSuggestions] = useState([]);
    const [tsfSupplier, setTsfSupplier] = useState("");
-   const { postData } = useContext(AuthContext);
+   const { postData, getData, storeName, user } = useContext(AuthContext);
 
    // Functions
    async function handleSupplierIdChange(text) {
@@ -272,9 +273,9 @@ function TsfSupplierOverlay({ tsfSupplierOverlay, setSupplierOverlay }) {
             renderItem={({ item }) => (
                <Button
                   type="outline"
-                  title={`${item.id}: ${item.name}`}
+                  title={item.name}
                   titleStyle={styles.buttonTitle}
-                  buttonStyle={[styles.button, { width: "100%" }]}
+                  buttonStyle={[styles.buttonContainer]}
                   containerStyle={{ margin: 10 }}
                   onPress={() => {
                      handleCreateTsf(item.name);
@@ -464,5 +465,9 @@ const styles = StyleSheet.create({
       marginHorizontal: 5,
       backgroundColor: "#112d4e",
       borderRadius: 10,
+   },
+   buttonTitle: {
+      color: "white",
+      fontFamily: "Montserrat-Medium",
    },
 });

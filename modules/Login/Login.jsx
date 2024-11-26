@@ -10,6 +10,7 @@ import {
    Platform,
 } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
+import { Dropdown } from "react-native-element-dropdown";
 
 export default function Login() {
    const { handleLogin } = useContext(AuthContext);

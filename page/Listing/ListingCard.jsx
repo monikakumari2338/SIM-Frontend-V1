@@ -11,8 +11,6 @@ export default function ListingCard({ item, refreshListingData }) {
    // Navigation
    const navigation = useNavigation();
 
-   // Creds
-   const { getData } = useContext(AuthContext);
    // Function Context
    const { handleDelete } = useContext(FunctionContext);
 
@@ -125,14 +123,6 @@ export default function ListingCard({ item, refreshListingData }) {
    async function deleteEntry(itemId) {
       await handleDelete(itemId, item.type);
       refreshListingData();
-   }
-
-   // Separate function to handle the Stock Count navigation as the listing item does not have sufficient data
-   async function navigateToItemsSc() {
-      const response = await getData(endpoints.fetchScItems + `${item.id}`);
-      navigation.navigate("SC Items", {
-         entryItem: response,
-      });
    }
 
    // redirection map based on type and status

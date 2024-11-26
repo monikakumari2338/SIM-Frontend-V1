@@ -15,6 +15,9 @@ import {
 import { Provider as PaperProvider } from "react-native-paper";
 import Toast, { BaseToast } from "react-native-toast-message";
 import { createTheme, ThemeProvider } from "@rneui/themed";
+import { LogBox } from "react-native";
+
+LogBox.ignoreAllLogs();
 
 // Contexts
 import { AuthProvider, AuthContext } from "./context/AuthContext";

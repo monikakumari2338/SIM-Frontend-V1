@@ -1,5 +1,4 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import ListingPage from "../../page/Listing/Listing";
 import ItemListing from "../../page/ItemListing/ItemListing";
 import AddItem from "../../page/AddItem/AddItem";
 import { screenOptions } from "../../screenOptions";

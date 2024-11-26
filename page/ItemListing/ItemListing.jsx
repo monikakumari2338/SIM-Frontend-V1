@@ -65,10 +65,17 @@ export default function EntryItemDetailPage({ route }) {
       in case of IA, DSD and RTV, the button group is visible when status is not in completedStatuses
       in case of SC, the button group is visible when status is in completedStatuses and recountStatus is not in completedStatuses
    */
+   const moduleBtnGrp = {
+      PO: false,
+      TSFIN: false,
+      TSFOUT: false,
+      IA: !isComplete,
+      DSD: !isComplete,
+      RTV: !isComplete,
+      SC: isComplete && !isRecounted,
+   };
    const showButtonGroup =
-      !["PO", "TSFIN", "TSFOUT"].includes(type) || // not PO, TSFIN or TSFOUT
-      (type === "SC" && isComplete && !isRecounted) || // SC and not recounted
-      (["IA", "DSD", "RTV"].includes(type) && !isComplete); // IA, DSD or RTV and not completed
+      moduleBtnGrp[type] !== undefined ? moduleBtnGrp[type] : true;
    // fetch the PO header, needs to be updated on FOCUS
    async function getPoHeader() {
       const response = await getData(endpoints.fetchPo);
@@ -1853,13 +1860,16 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
       {
          icon: "qrcode-scan",
          label: "Add Item",
-         onPress: () =>
+         onPress: () => {
             navigation.navigate("Add Items", {
                type: entryItem.type,
                tempItems,
                setTempItems,
                tempSupplier,
+               tsfStore: entryItem.storeTo,
             }),
+               console.log(entryItem);
+         },
       },
    ];
 

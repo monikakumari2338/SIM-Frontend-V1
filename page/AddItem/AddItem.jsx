@@ -8,7 +8,9 @@ import { endpoints } from "../../context/endpoints";
 
 export default function AddItem({ route }) {
    // States and vars
-   const { type, tempItems, setTempItems, tempSupplier, poItem } = route.params;
+   const { type, tempItems, setTempItems, tempSupplier, poItem, tsfStore } =
+      route.params;
+   console.log("ROUTE DATA:", type, tsfStore);
    const [suggestions, setSuggestions] = useState(null);
    const { getData, storeName } = useContext(AuthContext);
 
@@ -36,8 +38,9 @@ export default function AddItem({ route }) {
    }
    // Search Function for All Items
    async function generalItemSearch(searchStr) {
+      const store = tsfStore ? tsfStore : storeName;
       const searchResult = await getData(
-         endpoints.generalItemSearch + `${searchStr}/${storeName}/IA`
+         endpoints.generalItemSearch + `${searchStr}/${store}/IA`
       );
 
       if (searchResult.items.length > 0) {
@@ -103,7 +106,7 @@ export default function AddItem({ route }) {
    }
 
    return (
-      <View style={{ flex: 0.9 }}>
+      <View style={{ flex: 0.89 }}>
          <View style={{ flex: 1, backgroundColor: "black" }}>
             {/* <Scanner /> */}
          </View>
