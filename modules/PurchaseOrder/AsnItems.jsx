@@ -456,7 +456,7 @@ export default function AsnItems({ route }) {
          {asnStatus !== "Completed" && (
             <Portal>
                <FAB.Group
-                  style={{ marginBottom: 70 }}
+                  style={{ marginBottom: 10 }}
                   open={open}
                   visible
                   icon={open ? "close" : "plus"}

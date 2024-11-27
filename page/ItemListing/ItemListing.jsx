@@ -459,8 +459,6 @@ export function DetailsTab({
    const [tsfHeader, setTsfHeader] = useState([]);
    const { getData } = useContext(AuthContext);
 
-   console.log("YOYO's Comeback:", entryItem);
-
    // For transfers, we need to fetch the header details separately
    useEffect(() => {
       async function fetchTsfHeader() {
@@ -976,11 +974,12 @@ function TsfButtonGroup({ entryItem, tempItems, tempReason }) {
          }
       */
 
+      console.log("HEHEHE", tempItems);
       const requestBody = {
          tsfId: entryItem.id,
          image: "",
          tsfDetailsSaveDto: tempItems.map((item) => ({
-            receivedQty: item.qty,
+            receivedQty: item.shippedQty,
             damageQty: 0,
             damageProof: "",
             upc: item.upc,
