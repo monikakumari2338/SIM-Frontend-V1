@@ -1932,7 +1932,7 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
    return selectedActions.length === 1 ? (
       <Portal>
          <FAB
-            style={{ position: "absolute", bottom: 80, right: 10 }}
+            style={{ position: "absolute", bottom: 10, right: 10 }}
             icon={selectedActions[0].icon}
             onPress={selectedActions[0].onPress}
          />

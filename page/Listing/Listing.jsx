@@ -91,7 +91,7 @@ export default function ListingPage({ type }) {
    return (
       <ImageBackground
          source={require("../../assets/bg3.jpg")}
-         style={{ flex: 1 }}
+         style={{ flex: 0.9 }}
       >
          <FlatList
             data={listingData}
