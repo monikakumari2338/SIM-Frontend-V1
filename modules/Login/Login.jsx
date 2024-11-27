@@ -28,18 +28,26 @@ export default function Login() {
       async function fetchAllStores() {
          try {
             const response = await getData(endpoints.getAllStores);
-            setAllStores(
-               response.map((store) => {
-                  return {
+
+            // Check if the response is an array before calling map
+            if (Array.isArray(response)) {
+               setAllStores(
+                  response.map((store) => ({
                      label: store.storeName,
                      value: store.storeId,
-                  };
-               }) || []
-            );
+                  }))
+               );
+            } else {
+               console.error("Expected an array but got:", response);
+               // Optionally, handle the error by showing a message or empty list
+               setAllStores([]);
+            }
          } catch (error) {
-            console.log(error);
+            console.log("Error fetching stores:", error);
+            setAllStores([]); // Set empty stores if the fetch fails
          }
       }
+
       fetchAllStores();
    }, []);
 
