@@ -73,6 +73,7 @@ export default function ListingCard({ item, refreshListingData }) {
          "Partially Accepted": {
             color: "#9C27B0",
             textColor: "white",
+            label: "Part Accepted",
          },
          Rejected: {
             color: "#607D8B",
@@ -111,7 +112,7 @@ export default function ListingCard({ item, refreshListingData }) {
                   textTransform: "uppercase",
                }}
             >
-               {status}
+               {chipData[status].label || status}
             </Text>
          </View>
       );
@@ -230,7 +231,6 @@ export default function ListingCard({ item, refreshListingData }) {
       "Pending",
       "New Request",
       "New",
-      "pending",
    ];
    const deletableTypes = ["IA", "DSD"];
    const showDelete =

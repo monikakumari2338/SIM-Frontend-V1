@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import {
+   View,
+   Text,
+   StyleSheet,
+   Image,
+   KeyboardAvoidingView,
+   Platform,
+} from "react-native";
 import { SearchBar, Button, Icon } from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
 import { useNavigation } from "@react-navigation/native";

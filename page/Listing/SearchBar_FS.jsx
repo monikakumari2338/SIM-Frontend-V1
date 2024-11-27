@@ -149,7 +149,7 @@ function SortBottomSheet({
    setListingData,
 }) {
    // States and Vars
-   const { sortData } = useContext(FunctionContext);
+   const { sortEntry } = useContext(FunctionContext);
    const sortOpts = [
       {
          title: "Sort by",

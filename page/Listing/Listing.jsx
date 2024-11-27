@@ -75,25 +75,9 @@ export default function ListingPage({ type }) {
          case "RTV":
             newEntry = await createEntry(type);
             navigation.navigate("RTV Items", { entryItem: newEntry });
-            // handleCreateRtv();
             break;
          default:
             console.error("Invalid type to create entry");
-      }
-   }
-
-   async function handleCreateRtv() {
-      try {
-         const createResponse = await postData(
-            endpoints.createRtv + `${entryItem.id}/${storeName}`
-         );
-         const rtvItem = await getData(
-            endpoints.fetchItemsRTV + createResponse.id
-         );
-         rtvItem.type = "SC";
-         navigation.navigate("SC Items", { entryItem: rtvItem });
-      } catch (error) {
-         console.error("Failed to create SC Request", error);
       }
    }
 
@@ -107,7 +91,7 @@ export default function ListingPage({ type }) {
    return (
       <ImageBackground
          source={require("../../assets/bg3.jpg")}
-         style={{ flex: 0.9 }}
+         style={{ flex: 1 }}
       >
          <FlatList
             data={listingData}

@@ -1,10 +1,18 @@
 import { Button, Overlay, SearchBar } from "@rneui/themed";
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, Text, Image, FlatList } from "react-native";
+import {
+   View,
+   StyleSheet,
+   Text,
+   Image,
+   FlatList,
+   KeyboardAvoidingView,
+} from "react-native";
 import { Divider } from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
+import { Platform } from "react-native";
 
 export default function ItemStock({ route }) {
    const { item } = route.params;
@@ -104,7 +112,10 @@ export default function ItemStock({ route }) {
    }, [searchTerm]);
 
    return (
-      <View style={styles.page}>
+      <KeyboardAvoidingView
+         behavior={Platform.OS === "ios" ? "padding" : "height"}
+         style={styles.page}
+      >
          {/* Store name */}
          {diffStore && (
             <>
@@ -188,7 +199,7 @@ export default function ItemStock({ route }) {
                setColorsOverlay,
             }}
          />
-      </View>
+      </KeyboardAvoidingView>
    );
 }
 

@@ -458,28 +458,36 @@ export function DetailsTab({
    // Function for fetching the TSF header
    const [tsfHeader, setTsfHeader] = useState([]);
    const { getData } = useContext(AuthContext);
-   async function fetchTsfHeader() {
-      const response = await getData(endpoints.fetchItemsTsf + entryItem.id);
-      return [
-         { label: "ID", value: response.tsfId },
-         { label: "From", value: response.storeFrom },
-         { label: "To", value: response.storeTo },
-         { label: "Reason", value: response.reason || tempReason },
-         { label: "Start Date", value: response.notAfter || "Not Specified" },
-         { label: "End Date", value: response.notBefore || "Not Specified" },
-         {
-            label: "Total SKU",
-            value: tempItems.length || response.tsfDetailsDto.length,
-         },
-      ];
-   }
 
+   console.log("YOYO's Comeback:", entryItem);
+
+   // For transfers, we need to fetch the header details separately
    useEffect(() => {
+      async function fetchTsfHeader() {
+         const response = await getData(endpoints.fetchItemsTsf + entryItem.id);
+         return [
+            { label: "ID", value: response.tsfId },
+            { label: "From", value: response.storeFrom },
+            { label: "To", value: response.storeTo },
+            { label: "Reason", value: response.reason || tempReason },
+            {
+               label: "Start Date",
+               value: response.notAfter || "Not Specified",
+            },
+            { label: "End Date", value: response.notBefore || "Not Specified" },
+            {
+               label: "Total SKU",
+               value: tempItems.length || response.tsfDetailsDto.length,
+            },
+         ];
+      }
+
       if (type === "TSFIN" || type === "TSFOUT") {
          fetchTsfHeader().then(setTsfHeader);
       }
    }, [type]);
 
+   // Component for the label and value of each detail
    function Detail({ label, value }) {
       return (
          <View
@@ -551,7 +559,7 @@ export function DetailsTab({
          },
          {
             label: "Variance",
-            value: entryItem.totalVariance || "Not Specified",
+            value: entryItem.varianceQty || "Not Specified",
          },
       ],
       RTV: [
@@ -1924,7 +1932,7 @@ function MyFabGroup({ entryItem, tempItems, setTempItems, tempSupplier }) {
    return selectedActions.length === 1 ? (
       <Portal>
          <FAB
-            style={{ position: "absolute", bottom: 10, right: 10 }}
+            style={{ position: "absolute", bottom: 80, right: 10 }}
             icon={selectedActions[0].icon}
             onPress={selectedActions[0].onPress}
          />
