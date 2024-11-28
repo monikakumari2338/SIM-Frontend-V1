@@ -13,6 +13,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { Dropdown } from "react-native-element-dropdown";
 import { endpoints } from "../../context/endpoints";
 import Toast from "react-native-toast-message";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function Login() {
    const { handleLogin, getData } = useContext(AuthContext);
@@ -39,7 +40,6 @@ export default function Login() {
                );
             } else {
                console.error("Expected an array but got:", response);
-               // Optionally, handle the error by showing a message or empty list
                setAllStores([]);
             }
          } catch (error) {
@@ -62,7 +62,7 @@ export default function Login() {
    if (allStores.length === 0) {
       return (
          <View style={styles.loginPage}>
-            <Text style={{ color: "white" }}>Loading...</Text>
+            {/* <ActivityIndicator size="large" color="#f0f0f0" /> */}
          </View>
       );
    } else {

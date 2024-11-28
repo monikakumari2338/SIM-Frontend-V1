@@ -54,9 +54,9 @@ export default function Header() {
 
 const styles = StyleSheet.create({
    header: {
-      backgroundColor: "#112d4e",
+      backgroundColor: "grey",
       paddingHorizontal: 20,
-      paddingTop: 30,
+      paddingVertical: 10,
       flexDirection: "row",
       justifyContent: "space-between",
    },

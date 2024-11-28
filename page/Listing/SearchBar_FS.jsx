@@ -1,44 +1,99 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, {
+   useEffect,
+   useState,
+   useContext,
+} from "react";
 
 // React Native Imports
-import { View, Pressable, StyleSheet, Text } from "react-native";
+import {
+   View,
+   Pressable,
+   StyleSheet,
+   Text,
+} from "react-native";
 
 // React Native Elements UI Library
-import { Icon, SearchBar, ListItem } from "@rneui/themed";
+import {
+   Icon,
+   SearchBar,
+   ListItem,
+} from "@rneui/themed";
 
 // Custom Components
 import { BottomSheet } from "@rneui/base";
 import { FunctionContext } from "../../context/FunctionContext";
 
-export default function SearchBar_FS({ type, setListingData }) {
+export default function SearchBar_FS({
+   type,
+   setListingData,
+}) {
    // Search string state
-   const [searchStr, setSearchStr] = useState("");
+   const [
+      searchStr,
+      setSearchStr,
+   ] = useState("");
    // Function Context
-   const { searchEntry, filterEntry, fetchData } = useContext(FunctionContext);
+   const {
+      searchEntry,
+      filterEntry,
+      fetchData,
+   } = useContext(
+      FunctionContext,
+   );
 
    // Search Function
    async function searchData() {
       try {
-         if (searchStr.length === 0) {
-            setListingData(await fetchData(type));
+         if (
+            searchStr.length ===
+            0
+         ) {
+            setListingData(
+               await fetchData(
+                  type,
+               ),
+            );
             return;
          }
-         const searchResults = await searchEntry(type, searchStr);
-         setListingData(searchResults);
+         const searchResults =
+            await searchEntry(
+               type,
+               searchStr,
+            );
+         setListingData(
+            searchResults,
+         );
       } catch (error) {
-         console.error("Error fetching data:", error);
+         console.error(
+            "Error fetching data:",
+            error,
+         );
       }
    }
    // Apply Filter Function
-   async function applyFilter(type, reasonOrStatus) {
-      if (reasonOrStatus === "reset") {
+   async function applyFilter(
+      type,
+      reasonOrStatus,
+   ) {
+      if (
+         reasonOrStatus ===
+         "reset"
+      ) {
          resetFilter();
       }
 
       try {
-         setListingData(await filterEntry(type, reasonOrStatus));
+         setListingData(
+            await filterEntry(
+               type,
+               reasonOrStatus,
+            ),
+         );
       } catch (error) {
-         console.error("Error fetching data:", error);
+         console.error(
+            "Error fetching data:",
+            error,
+         );
       }
    }
 
@@ -48,63 +103,115 @@ export default function SearchBar_FS({ type, setListingData }) {
    }, [searchStr]);
 
    // Visibility States
-   const [sortVisible, setSortVisible] = useState(false);
-   const [filterVisible, setFilterVisible] = useState(false);
-   const [reasonFilterVisible, setReasonFilterVisible] = useState(false);
-   const [statusFilterVisible, setStatusFilterVisible] = useState(false);
+   const [
+      sortVisible,
+      setSortVisible,
+   ] = useState(false);
+   const [
+      filterVisible,
+      setFilterVisible,
+   ] = useState(false);
+   const [
+      reasonFilterVisible,
+      setReasonFilterVisible,
+   ] = useState(false);
+   const [
+      statusFilterVisible,
+      setStatusFilterVisible,
+   ] = useState(false);
 
    return (
       <>
-         <View style={styles.searchBarAndOpts}>
+         <View
+            style={
+               styles.searchBarAndOpts
+            }
+         >
             {/* Search Bar */}
             <SearchBar
                placeholder="Enter a search criteria"
                containerStyle={{
                   flex: 1,
-                  backgroundColor: "transparent",
-                  borderTopColor: "transparent",
-                  borderBottomColor: "transparent",
+                  backgroundColor:
+                     "transparent",
+                  borderTopColor:
+                     "transparent",
+                  borderBottomColor:
+                     "transparent",
                }}
                inputStyle={{
-                  fontFamily: "Montserrat-Medium",
+                  fontFamily:
+                     "Montserrat-Medium",
                   fontSize: 10,
                }}
                inputContainerStyle={{
                   height: 40,
                   borderRadius: 50,
-                  backgroundColor: "white",
+                  backgroundColor:
+                     "white",
                }}
-               value={searchStr}
-               onChangeText={(text) => {
-                  setSearchStr(text);
+               value={
+                  searchStr
+               }
+               onChangeText={(
+                  text,
+               ) => {
+                  setSearchStr(
+                     text,
+                  );
                }}
             />
 
             {/* Filter Button */}
             <Pressable
-               style={styles.buttonContainer}
-               onPress={() => setFilterVisible(true)}
+               style={
+                  styles.buttonContainer
+               }
+               onPress={() =>
+                  setFilterVisible(
+                     true,
+                  )
+               }
             >
-               <Icon name="filter" type="material-community" color={"white"} />
+               <Icon
+                  name="filter"
+                  type="material-community"
+                  color={
+                     "white"
+                  }
+               />
             </Pressable>
 
             {/* Sort Button */}
             <Pressable
-               style={styles.buttonContainer}
-               onPress={() => setSortVisible(true)}
+               style={
+                  styles.buttonContainer
+               }
+               onPress={() =>
+                  setSortVisible(
+                     true,
+                  )
+               }
             >
                <Icon
                   name="sort"
                   type="materialcommunity"
                   size={25}
-                  color={"white"}
+                  color={
+                     "white"
+                  }
                />
             </Pressable>
          </View>
 
          {/* Sort Bottom Sheet */}
          <SortBottomSheet
-            {...{ type, sortVisible, setSortVisible, setListingData }}
+            {...{
+               type,
+               sortVisible,
+               setSortVisible,
+               setListingData,
+            }}
          />
 
          {/* Main Filter Bottom Sheet */}
@@ -149,15 +256,24 @@ function SortBottomSheet({
    setListingData,
 }) {
    // States and Vars
-   const { sortEntry } = useContext(FunctionContext);
+   const { sortEntry } =
+      useContext(
+         FunctionContext,
+      );
    const sortOpts = [
       {
          title: "Sort by",
          titleStyle: {
-            fontFamily: "Montserrat-Regular",
+            fontFamily:
+               "Montserrat-Regular",
             fontSize: 25,
          },
-         containerStyle: [styles.sortOptContainer, { paddingTop: 0 }],
+         containerStyle: [
+            styles.sortOptContainer,
+            {
+               paddingTop: 0,
+            },
+         ],
       },
       {
          title: "Sort by latest",
@@ -167,8 +283,10 @@ function SortBottomSheet({
             color: "black",
             size: 35,
          },
-         titleStyle: styles.bottomSheetOpt,
-         containerStyle: styles.sortOptContainer,
+         titleStyle:
+            styles.bottomSheetOpt,
+         containerStyle:
+            styles.sortOptContainer,
          sortType: "latest",
       },
       {
@@ -179,60 +297,113 @@ function SortBottomSheet({
             color: "black",
             size: 35,
             containerStyle: {
-               transform: [{ scaleY: -1 }],
+               transform: [
+                  {
+                     scaleY:
+                        -1,
+                  },
+               ],
             },
          },
-         titleStyle: styles.bottomSheetOpt,
-         containerStyle: styles.sortOptContainer,
+         titleStyle:
+            styles.bottomSheetOpt,
+         containerStyle:
+            styles.sortOptContainer,
          sortType: "oldest",
       },
       {
          title: "Cancel",
-         icon: { name: "cancel", type: "material", color: "white" },
+         icon: {
+            name: "cancel",
+            type: "material",
+            color: "white",
+         },
          containerStyle: [
             styles.sortOptContainer,
-            { backgroundColor: "darkred" },
+            {
+               backgroundColor:
+                  "darkred",
+            },
          ],
-         titleStyle: styles.sortOptCancel,
+         titleStyle:
+            styles.sortOptCancel,
          sortType: "reset",
       },
    ];
 
-   async function fetchData(sortType) {
-      if (sortType === "reset") {
-         setListingData(await fetchData(type));
+   async function fetchData(
+      sortType,
+   ) {
+      if (
+         sortType === "reset"
+      ) {
+         setListingData(
+            await fetchData(
+               type,
+            ),
+         );
          return;
       }
 
       try {
-         setListingData(await sortEntry(type, sortType));
+         setListingData(
+            await sortEntry(
+               type,
+               sortType,
+            ),
+         );
       } catch (error) {
-         console.error("Error fetching data:", error);
+         console.error(
+            "Error fetching data:",
+            error,
+         );
       }
    }
 
    return (
       <BottomSheet
-         isVisible={sortVisible}
-         onBackdropPress={() => setSortVisible(false)}
+         isVisible={
+            sortVisible
+         }
+         onBackdropPress={() =>
+            setSortVisible(
+               false,
+            )
+         }
       >
-         {sortOpts.map((opt, i) => (
-            <ListItem
-               key={i}
-               containerStyle={opt.containerStyle}
-               onPress={() => {
-                  fetchData(opt.sortType);
-                  setSortVisible(false);
-               }}
-            >
-               <ListItem.Content>
-                  <Icon {...opt.icon} />
-                  <ListItem.Title style={opt.titleStyle}>
-                     {opt.title}
-                  </ListItem.Title>
-               </ListItem.Content>
-            </ListItem>
-         ))}
+         {sortOpts.map(
+            (opt, i) => (
+               <ListItem
+                  key={i}
+                  containerStyle={
+                     opt.containerStyle
+                  }
+                  onPress={() => {
+                     fetchData(
+                        opt.sortType,
+                     );
+                     setSortVisible(
+                        false,
+                     );
+                  }}
+               >
+                  <ListItem.Content>
+                     <Icon
+                        {...opt.icon}
+                     />
+                     <ListItem.Title
+                        style={
+                           opt.titleStyle
+                        }
+                     >
+                        {
+                           opt.title
+                        }
+                     </ListItem.Title>
+                  </ListItem.Content>
+               </ListItem>
+            ),
+         )}
       </BottomSheet>
    );
 }
@@ -261,7 +432,10 @@ function FilterBottomSheet({
 	*/
 
    // States and Vars
-   const { fetchData } = useContext(FunctionContext);
+   const { fetchData } =
+      useContext(
+         FunctionContext,
+      );
    const baseFilterOpts = [
       {
          title: "Filter by",
@@ -280,7 +454,8 @@ function FilterBottomSheet({
             color: "black",
             size: 30,
          },
-         titleStyle: styles.bottomSheetOpt,
+         titleStyle:
+            styles.bottomSheetOpt,
       },
       {
          title: "Reason",
@@ -290,63 +465,123 @@ function FilterBottomSheet({
             color: "black",
             size: 30,
          },
-         titleStyle: styles.bottomSheetOpt,
+         titleStyle:
+            styles.bottomSheetOpt,
       },
       {
          title: "Reset",
-         icon: { name: "refresh", type: "material", color: "white" },
-         containerStyle: { backgroundColor: "darkred" },
-         titleStyle: styles.sortOptCancel,
+         icon: {
+            name: "refresh",
+            type: "material",
+            color: "white",
+         },
+         containerStyle: {
+            backgroundColor:
+               "darkred",
+         },
+         titleStyle:
+            styles.sortOptCancel,
          type: "reset",
       },
    ];
 
    // Filter options based on the type
-   const filterOpts = ["PO", "DSD"].includes(type)
-      ? baseFilterOpts.filter((opt) => opt.title !== "Reason")
+   const filterOpts = [
+      "PO",
+      "DSD",
+   ].includes(type)
+      ? baseFilterOpts.filter(
+           (opt) =>
+              opt.title !==
+              "Reason",
+        )
       : baseFilterOpts;
 
    // Functions
    async function resetFilter() {
       try {
-         setListingData(await fetchData(type));
+         setListingData(
+            await fetchData(
+               type,
+            ),
+         );
          return;
       } catch (error) {
-         console.error("Error fetching data:", error);
+         console.error(
+            "Error fetching data:",
+            error,
+         );
       }
    }
 
    return (
       <BottomSheet
-         isVisible={filterVisible}
-         onBackdropPress={() => setFilterVisible(false)}
+         isVisible={
+            filterVisible
+         }
+         onBackdropPress={() =>
+            setFilterVisible(
+               false,
+            )
+         }
       >
-         {filterOpts.map((opt, i) => (
-            <ListItem
-               key={i}
-               containerStyle={[styles.sortOptContainer, opt.containerStyle]}
-               onPress={() => {
-                  setFilterVisible(false);
-                  // Actions defined for each filter option
-                  const actions = {
-                     Status: () => setStatusFilterVisible(true),
-                     Reason: () => setReasonFilterVisible(true),
-                     Reset: resetFilter,
-                  };
-                  const action = actions[opt.title];
-                  action ? action() : console.error("Invalid filter option");
-               }}
-            >
-               <ListItem.Content>
-                  <Icon {...opt.icon} />
-                  <ListItem.Title
-                     style={[styles.bottomSheetOpt, opt.titleStyle]}
-                  >
-                     {opt.title}
-                  </ListItem.Title>
-               </ListItem.Content>
-            </ListItem>
-         ))}
+         {filterOpts.map(
+            (opt, i) => (
+               <ListItem
+                  key={i}
+                  containerStyle={[
+                     styles.sortOptContainer,
+                     opt.containerStyle,
+                  ]}
+                  onPress={() => {
+                     setFilterVisible(
+                        false,
+                     );
+                     // Actions defined for each filter option
+                     const actions =
+                        {
+                           Status:
+                              () =>
+                                 setStatusFilterVisible(
+                                    true,
+                                 ),
+                           Reason:
+                              () =>
+                                 setReasonFilterVisible(
+                                    true,
+                                 ),
+                           Reset: resetFilter,
+                        };
+                     const action =
+                        actions[
+                           opt
+                              .title
+                        ];
+                     action
+                        ? action()
+                        : console.error(
+                             "Invalid filter option",
+                          );
+                  }}
+               >
+                  <ListItem.Content>
+                     <Icon
+                        {...opt.icon}
+                     />
+                     <ListItem.Title
+                        style={[
+                           styles.bottomSheetOpt,
+                           opt.titleStyle,
+                        ]}
+                     >
+                        {
+                           opt.title
+                        }
+                     </ListItem.Title>
+                  </ListItem.Content>
+               </ListItem>
+            ),
+         )}
       </BottomSheet>
    );
 }
@@ -470,9 +705,19 @@ function StatusFilterBottomSheet({
    };
 
    const statusFilter = {
-      IA: [STATUSES.InProgress, STATUSES.Completed],
-      DSD: [STATUSES.Saved, STATUSES.Completed],
-      RTV: [STATUSES.InProgress, STATUSES.Dispatched],
+      IA: [
+         STATUSES.InProgress,
+         STATUSES.Completed,
+      ],
+      DSD: [
+         STATUSES.InProgress,
+         STATUSES.Saved,
+         STATUSES.Completed,
+      ],
+      RTV: [
+         STATUSES.InProgress,
+         STATUSES.Dispatched,
+      ],
       PO: [
          STATUSES.Pending,
          STATUSES.InProgress,
@@ -504,36 +749,67 @@ function StatusFilterBottomSheet({
 
    return (
       <BottomSheet
-         isVisible={statusFilterVisible}
-         onBackdropPress={() => setStatusFilterVisible(false)}
+         isVisible={
+            statusFilterVisible
+         }
+         onBackdropPress={() =>
+            setStatusFilterVisible(
+               false,
+            )
+         }
       >
-         {statusFilter.map((opt, i) => (
-            <ListItem
-               key={i}
-               containerStyle={opt.containerStyle}
-               onPress={() => {
-                  applyFilter(type, opt.name);
-                  setStatusFilterVisible(false);
-               }}
-            >
-               <ListItem.Content>
-                  <Icon {...opt.icon} />
-                  <ListItem.Title style={styles.bottomSheetOpt}>
-                     {opt.name}
-                  </ListItem.Title>
-               </ListItem.Content>
-            </ListItem>
-         ))}
+         {statusFilter.map(
+            (opt, i) => (
+               <ListItem
+                  key={i}
+                  containerStyle={
+                     opt.containerStyle
+                  }
+                  onPress={() => {
+                     applyFilter(
+                        type,
+                        opt.name,
+                     );
+                     setStatusFilterVisible(
+                        false,
+                     );
+                  }}
+               >
+                  <ListItem.Content>
+                     <Icon
+                        {...opt.icon}
+                     />
+                     <ListItem.Title
+                        style={
+                           styles.bottomSheetOpt
+                        }
+                     >
+                        {
+                           opt.name
+                        }
+                     </ListItem.Title>
+                  </ListItem.Content>
+               </ListItem>
+            ),
+         )}
 
          {/* Reset Option */}
          <ListItem
             containerStyle={[
                styles.sortOptCancel,
-               { backgroundColor: "darkred" },
+               {
+                  backgroundColor:
+                     "darkred",
+               },
             ]}
             onPress={() => {
-               applyFilter(type, "reset");
-               setStatusFilterVisible(false);
+               applyFilter(
+                  type,
+                  "reset",
+               );
+               setStatusFilterVisible(
+                  false,
+               );
             }}
          >
             <ListItem.Content>
@@ -548,7 +824,8 @@ function StatusFilterBottomSheet({
                   style={[
                      styles.bottomSheetOpt,
                      {
-                        fontFamily: "Montserrat-Medium",
+                        fontFamily:
+                           "Montserrat-Medium",
                         color: "white",
                      },
                   ]}
@@ -660,15 +937,16 @@ function ReasonFilterBottomSheet({
             size: 30,
          },
       },
-      InventoryReplenishment: {
-         name: "Inventory Replenishment",
-         icon: {
-            name: "upload",
-            type: "font-awesome",
-            color: "black",
-            size: 30,
+      InventoryReplenishment:
+         {
+            name: "Inventory Replenishment",
+            icon: {
+               name: "upload",
+               type: "font-awesome",
+               color: "black",
+               size: 30,
+            },
          },
-      },
       PromotionalEvent: {
          name: "Promotional Event",
          icon: {
@@ -726,15 +1004,24 @@ function ReasonFilterBottomSheet({
    };
 
    const reasonFilter = {
-      IA: [REASONS.Damaged, REASONS.Theft, REASONS.StockIn, REASONS.StockOut],
+      IA: [
+         REASONS.Damaged,
+         REASONS.Theft,
+         REASONS.StockIn,
+         REASONS.StockOut,
+      ],
       RTV: [
          REASONS.BoxDamaged,
          REASONS.ItemDamaged,
          REASONS.WrongItem,
          REASONS.QualityIssue,
       ],
-      DSD: [REASONS.BoxDamaged],
-      PO: [REASONS.BoxDamaged],
+      DSD: [
+         REASONS.BoxDamaged,
+      ],
+      PO: [
+         REASONS.BoxDamaged,
+      ],
       TSFIN: [
          REASONS.EmergencyRequest,
          REASONS.InventoryReplenishment,
@@ -749,41 +1036,77 @@ function ReasonFilterBottomSheet({
          REASONS.StockConsolidation,
          REASONS.StockRedistribution,
       ],
-      SC: [REASONS.Audit, REASONS.Damage, REASONS.Routine, REASONS.Discrepancy],
+      SC: [
+         REASONS.Audit,
+         REASONS.Damage,
+         REASONS.Routine,
+         REASONS.Discrepancy,
+      ],
    }[type];
 
    return (
       <BottomSheet
-         isVisible={reasonFilterVisible}
-         onBackdropPress={() => setReasonFilterVisible(false)}
+         isVisible={
+            reasonFilterVisible
+         }
+         onBackdropPress={() =>
+            setReasonFilterVisible(
+               false,
+            )
+         }
       >
-         {reasonFilter.map((opt, i) => (
-            <ListItem
-               key={i}
-               containerStyle={opt.containerStyle}
-               onPress={() => {
-                  applyFilter(type, opt.name);
-                  setReasonFilterVisible(false);
-               }}
-            >
-               <ListItem.Content>
-                  <Icon {...opt.icon} />
-                  <ListItem.Title style={styles.bottomSheetOpt}>
-                     {opt.name}
-                  </ListItem.Title>
-               </ListItem.Content>
-            </ListItem>
-         ))}
+         {reasonFilter.map(
+            (opt, i) => (
+               <ListItem
+                  key={i}
+                  containerStyle={
+                     opt.containerStyle
+                  }
+                  onPress={() => {
+                     applyFilter(
+                        type,
+                        opt.name,
+                     );
+                     setReasonFilterVisible(
+                        false,
+                     );
+                  }}
+               >
+                  <ListItem.Content>
+                     <Icon
+                        {...opt.icon}
+                     />
+                     <ListItem.Title
+                        style={
+                           styles.bottomSheetOpt
+                        }
+                     >
+                        {
+                           opt.name
+                        }
+                     </ListItem.Title>
+                  </ListItem.Content>
+               </ListItem>
+            ),
+         )}
 
          {/* Reset Option */}
          <ListItem
             containerStyle={[
                styles.sortOptCancel,
-               { backgroundColor: "darkred" },
+               {
+                  backgroundColor:
+                     "darkred",
+               },
             ]}
             onPress={() => {
-               applyFilter(type, "reset");
-               setReasonFilterVisible(false);
+               applyFilter(
+                  type,
+                  "reset",
+               );
+               setReasonFilterVisible(
+                  false,
+               );
             }}
          >
             <ListItem.Content>
@@ -798,7 +1121,8 @@ function ReasonFilterBottomSheet({
                   style={[
                      styles.bottomSheetOpt,
                      {
-                        fontFamily: "Montserrat-Medium",
+                        fontFamily:
+                           "Montserrat-Medium",
                         color: "white",
                      },
                   ]}
@@ -811,53 +1135,60 @@ function ReasonFilterBottomSheet({
    );
 }
 
-const styles = StyleSheet.create({
-   searchBarAndOpts: {
-      flexDirection: "row",
-      alignItems: "center",
-   },
-   chipButton: {
-      marginHorizontal: 5,
-   },
-   sortOptContainer: {
-      paddingVertical: 20,
-   },
-   bottomSheetOpt: {
-      fontFamily: "Montserrat-Medium",
-      fontSize: 16,
-      marginTop: 10,
-   },
-   sortOptCancel: {
-      fontFamily: "Montserrat-Medium",
-      fontSize: 16,
-      color: "white",
-   },
+const styles =
+   StyleSheet.create({
+      searchBarAndOpts: {
+         flexDirection: "row",
+         alignItems: "center",
+      },
+      chipButton: {
+         marginHorizontal: 5,
+      },
+      sortOptContainer: {
+         paddingVertical: 20,
+      },
+      bottomSheetOpt: {
+         fontFamily:
+            "Montserrat-Medium",
+         fontSize: 16,
+         marginTop: 10,
+      },
+      sortOptCancel: {
+         fontFamily:
+            "Montserrat-Medium",
+         fontSize: 16,
+         color: "white",
+      },
 
-   // Date Picker Styles
-   container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      padding: 16,
-   },
-   picker: {
-      marginVertical: 10,
-      alignItems: "center",
-   },
-   dateText: {
-      marginTop: 10,
-      fontSize: 16,
-      fontFamily: "Montserrat-Medium",
-   },
-   bottomSheet: {
-      backgroundColor: "white",
-      padding: 10,
-   },
-   buttonContainer: {
-      paddingVertical: 5,
-      paddingHorizontal: 6,
-      marginHorizontal: 5,
-      backgroundColor: "#112d4e",
-      borderRadius: 10,
-   },
-});
+      // Date Picker Styles
+      container: {
+         flex: 1,
+         justifyContent:
+            "center",
+         alignItems: "center",
+         padding: 16,
+      },
+      picker: {
+         marginVertical: 10,
+         alignItems: "center",
+      },
+      dateText: {
+         marginTop: 10,
+         fontSize: 16,
+         fontFamily:
+            "Montserrat-Medium",
+      },
+      bottomSheet: {
+         backgroundColor:
+            "white",
+         padding: 10,
+      },
+      buttonContainer: {
+         paddingVertical: 5,
+         paddingHorizontal: 6,
+         marginHorizontal: 5,
+         backgroundColor:
+            "#112d4e",
+         borderRadius: 10,
+      },
+   });

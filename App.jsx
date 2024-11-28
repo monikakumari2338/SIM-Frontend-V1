@@ -6,15 +6,18 @@ import {
    Text,
    TouchableOpacity,
    StyleSheet,
+   StatusBar,
+   Image,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
    createDrawerNavigator,
    DrawerItemList,
+   useDrawerStatus,
 } from "@react-navigation/drawer";
 import { Provider as PaperProvider } from "react-native-paper";
 import Toast, { BaseToast } from "react-native-toast-message";
-import { createTheme, ThemeProvider } from "@rneui/themed";
+import { createTheme, Icon, ThemeProvider } from "@rneui/themed";
 import { LogBox } from "react-native";
 
 LogBox.ignoreAllLogs();
@@ -36,7 +39,6 @@ import RtvNavigator from "./modules/ReturnToVendor/RtvNavigator";
 
 // Fonts
 import { useFonts } from "expo-font";
-import Header from "./globalComps/Header";
 import Footer from "./globalComps/Footer";
 
 const Drawer = createDrawerNavigator();
@@ -49,7 +51,6 @@ export default function App() {
       "Montserrat-SemiBold": require("./assets/fonts/Montserrat-SemiBold.ttf"),
       "Montserrat-Light": require("./assets/fonts/Montserrat-Light.ttf"),
    });
-
    if (!loaded) {
       return <ActivityIndicator size="large" color="#112d4e" />;
    }
@@ -68,78 +69,134 @@ export default function App() {
    );
 }
 
+// Comp: Main App
 function MainApp() {
-   const { isAuthenticated } = useContext(AuthContext);
+   const { isAuthenticated, user, storeName } = useContext(AuthContext);
+   const userDetails = [
+      {
+         icon: "storefront",
+         iconType: "ionicons",
+         label: storeName,
+      },
+      {
+         icon: "user",
+         iconType: "feather",
+         label: user.split(" ")[0],
+      },
+   ];
 
    return (
-      <NavigationContainer>
-         {
-            // If the user is authenticated, show the Header
-            isAuthenticated && <Header />
-         }
-         <Drawer.Navigator
-            drawerContent={(props) => <LogoutButton {...props} />}
-            initialRouteName="Dashboard"
-            screenOptions={{
-               drawerStyle: {
-                  backgroundColor: "#112d4e",
-               },
-               drawerActiveTintColor: "white",
-               drawerInactiveTintColor: "white",
-               drawerLabelStyle: {
-                  fontFamily: "Montserrat-Regular",
-                  fontSize: 16,
-               },
-               headerStyle: {
-                  backgroundColor: "#112d4e",
-               },
-               headerTitleAlign: "center",
-               headerTintColor: "white",
-               headerTitleStyle: {
-                  fontFamily: "Montserrat-Regular",
-               },
-               drawerType: "slide",
-               headerShown: isAuthenticated ? true : false,
-            }}
-         >
-            {isAuthenticated ? (
-               <>
-                  <Drawer.Screen name="Dashboard" component={Dashboard} />
-                  <Drawer.Screen
-                     name="Inventory Adjustment"
-                     component={IaNavigator}
-                  />
-                  <Drawer.Screen
-                     name="Direct Store Delivery"
-                     component={DsdNavigator}
-                  />
-                  <Drawer.Screen name="Item Lookup" component={GsNavigator} />
-                  <Drawer.Screen
-                     name="Purchase Order"
-                     component={PoNavigator}
-                  />
-                  <Drawer.Screen
-                     name="Transfer"
-                     component={TransferNavigator}
-                  />
-                  <Drawer.Screen name="Stock Count" component={ScNavigator} />
-                  <Drawer.Screen
-                     name="Return To Vendor"
-                     component={RtvNavigator}
-                  />
-               </>
-            ) : (
-               <Drawer.Screen name="Login" component={Login} />
-            )}
-         </Drawer.Navigator>
-         {
-            // If the user is authenticated, show the Footer
-            isAuthenticated && <Footer />
-         }
-      </NavigationContainer>
+      <>
+         <StatusBar barStyle="light-content" backgroundColor="#112d4e" />
+         <NavigationContainer>
+            <Drawer.Navigator
+               drawerContent={(props) => (
+                  <>
+                     <View style={styles.header}>
+                        <Image
+                           source={require("../SIM-Frontend-V1/assets/kpmgLogo.png")}
+                           style={{
+                              width: 80,
+                              height: 30,
+                           }}
+                        />
+
+                        <View style={styles.storeInfoContainer}>
+                           {userDetails.map((detail, index) => (
+                              <View
+                                 key={index}
+                                 style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                 }}
+                              >
+                                 <Icon
+                                    name={detail.icon}
+                                    type={detail.iconType}
+                                    size={15}
+                                    color="white"
+                                    style={{ marginRight: 5 }}
+                                 />
+                                 <Text style={styles.storeId}>
+                                    {detail.label}
+                                 </Text>
+                              </View>
+                           ))}
+                        </View>
+                     </View>
+
+                     <LogoutButton {...props} />
+                  </>
+               )}
+               initialRouteName="Dashboard"
+               screenOptions={{
+                  drawerStyle: {
+                     backgroundColor: "#112d4e",
+                     // paddingTop: 40,
+                  },
+                  drawerInactiveTintColor: "white",
+                  drawerLabelStyle: {
+                     fontFamily: "Montserrat-Regular",
+                     fontSize: 16,
+                  },
+                  headerStyle: {
+                     backgroundColor: "#112d4e",
+                  },
+                  headerTitleAlign: "center",
+                  headerTintColor: "white",
+                  headerTitleStyle: {
+                     fontFamily: "Montserrat-Regular",
+                  },
+                  drawerType: "front",
+                  headerShown: isAuthenticated ? true : false,
+               }}
+            >
+               {isAuthenticated ? (
+                  <>
+                     <Drawer.Screen name="Dashboard" component={Dashboard} />
+                     <Drawer.Screen
+                        name="Inventory Adjustment"
+                        component={IaNavigator}
+                     />
+                     <Drawer.Screen
+                        name="Direct Store Delivery"
+                        component={DsdNavigator}
+                     />
+                     <Drawer.Screen
+                        name="Item Lookup"
+                        component={GsNavigator}
+                     />
+                     <Drawer.Screen
+                        name="Purchase Order"
+                        component={PoNavigator}
+                     />
+                     <Drawer.Screen
+                        name="Transfer"
+                        component={TransferNavigator}
+                     />
+                     <Drawer.Screen
+                        name="Stock Count"
+                        component={ScNavigator}
+                     />
+                     <Drawer.Screen
+                        name="Return To Vendor"
+                        component={RtvNavigator}
+                     />
+                  </>
+               ) : (
+                  <Drawer.Screen name="Login" component={Login} />
+               )}
+            </Drawer.Navigator>
+            {
+               // If the user is authenticated, show the Footer
+               isAuthenticated && <Footer />
+            }
+         </NavigationContainer>
+      </>
    );
 }
 
+// Comp: Logout Button
 function LogoutButton(props) {
    const { handleLogout } = useContext(AuthContext);
 
@@ -148,10 +205,10 @@ function LogoutButton(props) {
       logoutButton: {
          margin: 20,
          marginBottom: 100,
-         paddingVertical: 15,
-         paddingHorizontal: 20,
+         paddingVertical: 10,
+         paddingHorizontal: 15,
+         borderRadius: 5,
          backgroundColor: "#483698",
-         borderRadius: 10,
          alignItems: "center",
          alignSelf: "flex-start",
          marginTop: "auto",
@@ -236,3 +293,20 @@ const toastConfig = {
       />
    ),
 };
+
+// Styles
+const styles = StyleSheet.create({
+   header: {
+      backgroundColor: "#112d4e",
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      marginBottom: 10,
+      flexDirection: "row",
+      justifyContent: "space-between",
+   },
+   storeId: {
+      fontFamily: "Montserrat-Bold",
+      color: "white",
+      fontSize: 12,
+   },
+});

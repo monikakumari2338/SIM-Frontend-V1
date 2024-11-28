@@ -1,24 +1,52 @@
-import { useContext, useState } from "react";
-import { View, Text, StyleSheet, Image, FlatList, Alert } from "react-native";
-import { Button, Input, Overlay } from "@rneui/themed";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import {
+   useContext,
+   useState,
+   useEffect,
+} from "react";
+import {
+   View,
+   Text,
+   StyleSheet,
+   Image,
+   FlatList,
+   Alert,
+   TouchableOpacity,
+} from "react-native";
+import {
+   Button,
+   Icon,
+   Input,
+   Overlay,
+} from "@rneui/themed";
+import {
+   CameraView,
+   useCameraPermissions,
+} from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
 import { endpoints } from "../../context/endpoints";
 
 export default function AddItem({ route }) {
    // States and vars
-   const { type, tempItems, setTempItems, tempSupplier, poItem, tsfStore } =
-      route.params;
-   console.log("ROUTE DATA:", type, tsfStore);
-   const [suggestions, setSuggestions] = useState(null);
-   const { getData, storeName } = useContext(AuthContext);
+   const {
+      type,
+      tempItems,
+      setTempItems,
+      tempSupplier,
+      poItem,
+      tsfStore,
+   } = route.params;
+   const [suggestions, setSuggestions] = useState(
+      [],
+   );
+   const { getData, storeName } =
+      useContext(AuthContext);
 
    // Primary Search Function
    async function searchItems(searchStr) {
       // Handle empty search string
       if (searchStr === "") {
-         setSuggestions(null);
+         setSuggestions([]);
          return;
       }
 
@@ -34,13 +62,24 @@ export default function AddItem({ route }) {
       };
 
       // Set suggestions array based on search results from functions
-      setSuggestions(await searchFunctions[type](searchStr));
+      try {
+         setSuggestions(
+            await searchFunctions[type](
+               searchStr,
+            ),
+         );
+      } catch (error) {
+         console.log(error);
+      }
    }
    // Search Function for All Items
    async function generalItemSearch(searchStr) {
-      const store = tsfStore ? tsfStore : storeName;
+      const store = tsfStore
+         ? tsfStore
+         : storeName;
       const searchResult = await getData(
-         endpoints.generalItemSearch + `${searchStr}/${store}/IA`
+         endpoints.generalItemSearch +
+            `${searchStr}/${store}/IA`,
       );
 
       if (searchResult.items.length > 0) {
@@ -48,7 +87,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "No items found",
-            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`
+            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`,
          );
          return [];
       }
@@ -57,7 +96,7 @@ export default function AddItem({ route }) {
    async function supplierItemSearch(searchStr) {
       const searchResult = await getData(
          endpoints.fetchItemsBySupplier +
-            `${tempSupplier}/${searchStr}/${storeName}/DSD`
+            `${tempSupplier}/${searchStr}/${storeName}/DSD`,
       );
 
       if (searchResult.items.length > 0) {
@@ -65,7 +104,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "No items found",
-            `No valid items found for the searched SKU ${searchStr} for the supplier ${tempSupplier}`
+            `No valid items found for the searched SKU ${searchStr} for the supplier ${tempSupplier}`,
          );
          return [];
       }
@@ -73,7 +112,8 @@ export default function AddItem({ route }) {
    // Search function for PO
    async function poItemSearch(searchStr) {
       const searchResult = await getData(
-         endpoints.fetchPoItems + `${poItem.id}/${searchStr}/PO`
+         endpoints.fetchPoItems +
+            `${poItem.id}/${searchStr}/PO`,
       );
 
       if (searchResult.items.length > 0) {
@@ -81,7 +121,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "No items found",
-            `No valid items found for the searched SKU ${searchStr} for the PO ${poItem.poNumber}`
+            `No valid items found for the searched SKU ${searchStr} for the PO ${poItem.poNumber}`,
          );
          return [];
       }
@@ -89,26 +129,40 @@ export default function AddItem({ route }) {
    // Search cat-specific items for Stock Count
    async function catItemSearch(searchStr) {
       const searchResult = await getData(
-         endpoints.searchCatItems + `${searchStr}/${storeName}/Sportswear`
+         endpoints.searchCatItems +
+            `${searchStr}/${storeName}/Sportswear`,
       );
 
       if (searchResult.items.length > 0) {
          // for all items, set type to "SC"
-         searchResult.items.forEach((item) => (item.type = "SC"));
+         searchResult.items.forEach(
+            (item) => (item.type = "SC"),
+         );
          return searchResult.items;
       } else {
          Alert.alert(
             "Is the SKU correct?",
-            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`
+            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`,
          );
          return [];
       }
    }
 
    return (
-      <View style={{ flex: 0.89 }}>
-         <View style={{ flex: 1, backgroundColor: "black" }}>
-            {/* <Scanner /> */}
+      <View
+         style={{
+            flex: 0.89,
+         }}
+      >
+         <View
+            style={{
+               flex: 1,
+               backgroundColor: "black",
+            }}
+         >
+            <Scanner
+               {...{ suggestions, searchItems }}
+            />
          </View>
 
          {/* Manual Item Search section */}
@@ -122,40 +176,65 @@ export default function AddItem({ route }) {
             {/* Input for Item ID */}
             <Input
                placeholder="Enter an SKU to search"
-               onChangeText={(text) => searchItems(text)}
-               style={{ padding: 10, margin: 20 }}
+               onChangeText={(text) =>
+                  searchItems(text)
+               }
+               style={{
+                  padding: 10,
+                  margin: 20,
+               }}
             />
             <FlatList
                data={suggestions}
                renderItem={({ item }) => (
                   <ItemSuggestion
-                     {...{ type, item, tempItems, setTempItems }}
+                     {...{
+                        type,
+                        item,
+                        tempItems,
+                        setTempItems,
+                     }}
                   />
                )}
                keyExtractor={(item) => item.sku}
-               style={{ width: "100%" }}
+               style={{
+                  width: "100%",
+               }}
             />
          </View>
       </View>
    );
 }
 
-function ItemSuggestion({ type, item, tempItems, setTempItems }) {
+function ItemSuggestion({
+   type,
+   item,
+   tempItems,
+   setTempItems,
+}) {
    // States and vars
    const navigation = useNavigation();
-   const [expectedQtyOverlay, setExpectedQtyOverlay] = useState(false);
+   const [
+      expectedQtyOverlay,
+      setExpectedQtyOverlay,
+   ] = useState(false);
 
    // Functions
    function handleAddItem(item) {
       const tempItemsCopy = [...tempItems];
-      const index = tempItemsCopy.findIndex((i) => i.sku === item.sku);
+      const index = tempItemsCopy.findIndex(
+         (i) => i.sku === item.sku,
+      );
       // if item already exists in tempItems, increase quantity
       if (index !== -1) {
          tempItemsCopy[index].qty++;
       }
       // else add item to tempItems with quantity 1
       else {
-         tempItemsCopy.push({ ...item, qty: 1 });
+         tempItemsCopy.push({
+            ...item,
+            qty: 1,
+         });
       }
       setTempItems(tempItemsCopy);
       navigation.goBack();
@@ -165,14 +244,34 @@ function ItemSuggestion({ type, item, tempItems, setTempItems }) {
       <>
          {/* Suggestion Card */}
          <View style={styles.suggestionCard}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-               <Image style={styles.suggestionCardImage} src={item.imageData} />
+            <View
+               style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+               }}
+            >
+               <Image
+                  style={
+                     styles.suggestionCardImage
+                  }
+                  src={item.imageData}
+               />
                <View>
-                  <View style={{ marginBottom: 5 }}>
-                     <Text style={styles.text2Bold}>SKU: {item.sku}</Text>
+                  <View
+                     style={{
+                        marginBottom: 5,
+                     }}
+                  >
+                     <Text
+                        style={styles.text2Bold}
+                     >
+                        SKU: {item.sku}
+                     </Text>
                   </View>
 
-                  <Text style={styles.text2Name}>{item.itemName}</Text>
+                  <Text style={styles.text2Name}>
+                     {item.itemName}
+                  </Text>
                   <Text style={styles.text2}>
                      {item.color} / {item.size}
                   </Text>
@@ -181,7 +280,9 @@ function ItemSuggestion({ type, item, tempItems, setTempItems }) {
 
             <Button
                title="Add"
-               titleStyle={{ fontFamily: "Montserrat-Medium" }}
+               titleStyle={{
+                  fontFamily: "Montserrat-Medium",
+               }}
                buttonStyle={{
                   borderRadius: 10,
                }}
@@ -217,7 +318,10 @@ function ExpectedQtyOverlay({
       // validate the qty
       const qtyInt = parseInt(qty);
       if (qtyInt < 1) {
-         Alert.alert("Invalid quantity", "Quantity must be greater than 0");
+         Alert.alert(
+            "Invalid quantity",
+            "Quantity must be greater than 0",
+         );
          return false;
       }
       return true;
@@ -239,13 +343,20 @@ function ExpectedQtyOverlay({
    }
 
    const navigation = useNavigation();
-   const [expectedQty, setExpectedQty] = useState(0);
+   const [expectedQty, setExpectedQty] =
+      useState(0);
 
    return (
       <Overlay
          isVisible={expectedQtyOverlay}
-         onBackdropPress={() => setExpectedQtyOverlay(false)}
-         overlayStyle={{ width: "80%", padding: 20, borderRadius: 20 }}
+         onBackdropPress={() =>
+            setExpectedQtyOverlay(false)
+         }
+         overlayStyle={{
+            width: "80%",
+            padding: 20,
+            borderRadius: 20,
+         }}
       >
          <Text
             style={{
@@ -258,7 +369,9 @@ function ExpectedQtyOverlay({
          </Text>
          <Input
             placeholder="Enter the received quantity"
-            onChangeText={(text) => setExpectedQty(text)}
+            onChangeText={(text) =>
+               setExpectedQty(text)
+            }
             keyboardType="number-pad"
          />
          <Button
@@ -266,7 +379,9 @@ function ExpectedQtyOverlay({
             titleStyle={{
                fontFamily: "Montserrat-Bold",
             }}
-            onPress={() => createItem(item, expectedQty)}
+            onPress={() =>
+               createItem(item, expectedQty)
+            }
             buttonStyle={{
                alignSelf: "center",
                paddingHorizontal: 20,
@@ -276,10 +391,15 @@ function ExpectedQtyOverlay({
    );
 }
 
-// to be implemented later, black bg currently
-function Scanner() {
+function Scanner({ suggestions, searchItems }) {
    const [facing, setFacing] = useState("back");
-   const [permission, requestPermission] = useCameraPermissions();
+   const [permission, requestPermission] =
+      useCameraPermissions();
+
+   // ask for permission on render
+   useEffect(() => {
+      requestPermission();
+   }, []);
 
    if (!permission) {
       // Camera permissions are still loading.
@@ -290,27 +410,46 @@ function Scanner() {
       // Camera permissions are not granted yet.
       return (
          <View style={styles.container}>
-            <Text style={{ textAlign: "center" }}>
-               We need your permission to show the camera
+            <Text
+               style={{
+                  textAlign: "center",
+               }}
+            >
+               We need your permission to show the
+               camera
             </Text>
-            <Button onPress={requestPermission} title="grant permission" />
          </View>
       );
    }
 
    function toggleCameraFacing() {
-      setFacing((current) => (current === "back" ? "front" : "back"));
+      setFacing((current) =>
+         current === "back" ? "front" : "back",
+      );
    }
 
    return (
       <View style={styles.container}>
-         <CameraView style={styles.camera} facing={facing}>
+         <CameraView
+            style={styles.camera}
+            facing={facing}
+            onBarcodeScanned={(data) => {
+               if (suggestions.length === 0) {
+                  searchItems(data.data);
+               }
+            }}
+         >
             <View style={styles.buttonContainer}>
                <TouchableOpacity
                   style={styles.button}
                   onPress={toggleCameraFacing}
                >
-                  <Text style={styles.text}>Flip Camera</Text>
+                  <Icon
+                     name="camera-flip"
+                     type="material-community"
+                     size={32}
+                     color="white"
+                  />
                </TouchableOpacity>
             </View>
          </CameraView>
@@ -356,9 +495,9 @@ const styles = StyleSheet.create({
    },
    buttonContainer: {
       flex: 1,
-      flexDirection: "row",
       backgroundColor: "transparent",
-      margin: 64,
+      flexDirection: "row",
+      margin: 20,
    },
    button: {
       flex: 1,

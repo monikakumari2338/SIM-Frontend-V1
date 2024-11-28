@@ -66,7 +66,7 @@ export default function Dashboard() {
          ) : (
             <ScrollView
                showsVerticalScrollIndicator={false}
-               style={{ flex: 0.89 }}
+               style={{ flex: 0.9 }}
             >
                {/* Tasks Carousel */}
                <TasksCarousel data={data} />
@@ -217,8 +217,8 @@ function TasksCarousel({ data }) {
          <Carousel
             loop
             mode="parallax"
-            width={380}
-            height={180}
+            width={411}
+            height={170}
             autoPlay={true}
             autoPlayInterval={3000}
             data={taskCardData}
@@ -362,6 +362,7 @@ const styles = StyleSheet.create({
       fontSize: 20,
       color: "#112d4e",
       marginVertical: 20,
+      marginHorizontal: 20,
    },
    graphHeading: {
       fontFamily: "Montserrat-Bold",

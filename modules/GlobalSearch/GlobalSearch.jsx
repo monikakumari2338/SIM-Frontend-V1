@@ -1,4 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+   useContext,
+   useEffect,
+   useState,
+} from "react";
 import {
    View,
    Text,
@@ -6,57 +10,129 @@ import {
    Image,
    KeyboardAvoidingView,
    Platform,
+   TouchableOpacity,
 } from "react-native";
-import { SearchBar, Button, Icon } from "@rneui/themed";
+import {
+   SearchBar,
+   Button,
+   Icon,
+} from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
+import {
+   CameraView,
+   useCameraPermissions,
+} from "expo-camera";
 
 export default function GlobalSearch() {
    // Constants and Variables
    const [sku, setSku] = useState("");
    const [item, setItem] = useState(null);
-   const { storeName, getData } = useContext(AuthContext);
-
-   // Search Function
-   async function searchSku(sku) {
-      if (sku === "") {
-         setItem(null);
-         return;
-      }
-
-      try {
-         const response = await getData(
-            `${endpoints.storeItemDetails}${sku}/${storeName}`
-         );
-         setItem(response);
-      } catch (error) {
-         setItem(null);
-      }
-   }
+   const { storeName, getData } =
+      useContext(AuthContext);
 
    // UseEffect: Search on SKU modification
    useEffect(() => {
+      // Search Function
+      async function searchSku(sku) {
+         if (sku === "") {
+            setItem(null);
+            return;
+         }
+
+         try {
+            const response = await getData(
+               `${endpoints.storeItemDetails}${sku}/${storeName}`,
+            );
+            setItem(response);
+         } catch (error) {
+            setItem(null);
+         }
+      }
+
       searchSku(sku);
    }, [sku]);
 
    return (
-      <View style={styles.page}>
-         <Scanner {...{ setSku }} />
-         <ManualSearch {...{ sku, setSku, item }} />
-      </View>
+      <KeyboardAvoidingView
+         behavior={
+            Platform.OS === "ios"
+               ? "padding"
+               : "height"
+         }
+         style={{ flex: 0.9 }}
+      >
+         <Scanner {...{ sku, setSku }} />
+         <ManualSearch
+            {...{ sku, setSku, item }}
+         />
+      </KeyboardAvoidingView>
    );
 }
 
-function Scanner({ setSku }) {
+function Scanner({ sku, setSku }) {
+   const [facing, setFacing] = useState("back");
+   const [permission, requestPermission] =
+      useCameraPermissions();
+
+   // ask for permission on render
+   useEffect(() => {
+      requestPermission();
+   }, []);
+
+   if (!permission) {
+      // Camera permissions are still loading.
+      return <View />;
+   }
+
+   if (!permission.granted) {
+      // Camera permissions are not granted yet.
+      return (
+         <View style={styles.container}>
+            <Text
+               style={{
+                  textAlign: "center",
+               }}
+            >
+               We need your permission to show the
+               camera
+            </Text>
+         </View>
+      );
+   }
+
+   function toggleCameraFacing() {
+      setFacing((current) =>
+         current === "back" ? "front" : "back",
+      );
+   }
+
    return (
-      <View style={styles.scannerContainer}>
-         <Icon
-            name="camera"
-            type="material-community"
-            size={100}
-            color="#f0f0f0"
-         />
+      <View style={styles.container}>
+         <CameraView
+            style={styles.camera}
+            facing={facing}
+            onBarcodeScanned={(data) => {
+               if (sku.length === 0) {
+                  setSku(data.data);
+               }
+            }}
+         >
+            <View style={styles.buttonContainer}>
+               <TouchableOpacity
+                  style={styles.button}
+                  onPress={toggleCameraFacing}
+               >
+                  <Icon
+                     name="camera-flip"
+                     type="material-community"
+                     size={32}
+                     color="white"
+                  />
+               </TouchableOpacity>
+            </View>
+         </CameraView>
       </View>
    );
 }
@@ -69,8 +145,12 @@ function ManualSearch({ sku, setSku, item }) {
             placeholder="Search an item SKU here..."
             value={sku}
             onChangeText={setSku}
-            containerStyle={styles.searchContainer}
-            inputContainerStyle={styles.searchInput}
+            containerStyle={
+               styles.searchContainer
+            }
+            inputContainerStyle={
+               styles.searchInput
+            }
          />
 
          {/* Item Card */}
@@ -84,9 +164,15 @@ function ItemCard({ item }) {
 
    function InfoSection({ label, value }) {
       return (
-         <View style={{ flexDirection: "column" }}>
-            <Text style={styles.label}>{label}</Text>
-            <Text style={styles.value}>{value}</Text>
+         <View
+            style={{ flexDirection: "column" }}
+         >
+            <Text style={styles.label}>
+               {label}
+            </Text>
+            <Text style={styles.value}>
+               {value}
+            </Text>
          </View>
       );
    }
@@ -96,18 +182,25 @@ function ItemCard({ item }) {
 
    return (
       <View style={styles.itemCard}>
-         <Image source={{ uri: item.imageData }} style={styles.itemImage} />
+         <Image
+            source={{ uri: item.imageData }}
+            style={styles.itemImage}
+         />
          <View
             style={{
                flexDirection: "column",
                justifyContent: "space-between",
             }}
          >
-            <InfoSection label="SKU" value={item.sku} />
+            <InfoSection
+               label="SKU"
+               value={item.sku}
+            />
             <View>
                <Text
                   style={{
-                     fontFamily: "Montserrat-Bold",
+                     fontFamily:
+                        "Montserrat-Bold",
                      fontSize: 16,
                      color: "#f0f0f0",
                   }}
@@ -116,7 +209,8 @@ function ItemCard({ item }) {
                </Text>
                <Text
                   style={{
-                     fontFamily: "Montserrat-Regular",
+                     fontFamily:
+                        "Montserrat-Regular",
                      fontSize: 12,
                      color: "#f0f0f0",
                   }}
@@ -127,7 +221,10 @@ function ItemCard({ item }) {
          </View>
          <Button
             title="Select"
-            titleStyle={{ fontFamily: "Montserrat-Regular", color: "#000" }}
+            titleStyle={{
+               fontFamily: "Montserrat-Regular",
+               color: "#000",
+            }}
             buttonStyle={{
                backgroundColor: "#f0f0f0",
                borderRadius: 10,
@@ -192,5 +289,30 @@ const styles = StyleSheet.create({
       fontFamily: "Montserrat-Bold",
       fontSize: 15,
       color: "#fff",
+   },
+
+   // camera styles
+   container: {
+      flex: 1,
+   },
+   camera: {
+      flex: 1,
+      width: "100%",
+   },
+   buttonContainer: {
+      flex: 1,
+      backgroundColor: "transparent",
+      flexDirection: "row",
+      margin: 20,
+   },
+   button: {
+      flex: 1,
+      alignSelf: "flex-end",
+      alignItems: "center",
+   },
+   text: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "white",
    },
 });

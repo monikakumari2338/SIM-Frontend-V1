@@ -16,7 +16,12 @@ export const AuthProvider = ({ children }) => {
    const [storeName, setStoreName] = useState("");
    const [user, setuser] = useState("");
 
-   const baseURL = "http://10.0.2.2:9029";
+   // Emulator
+   // const baseURL = "http://10.0.2.2:9029";
+
+   // Physical Device
+   const baseURL = "http://192.168.1.6:9029";
+
    const api = axios.create({
       baseURL,
    });
