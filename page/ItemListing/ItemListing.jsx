@@ -600,8 +600,11 @@ export function DetailsTab({
          {/* ASN Count for PO */}
          {type === "PO" && (
             <View style={styles.asnCountContainer}>
-               <Text style={styles.asnCountLabel}>ASN Count:</Text>
-               <Text style={styles.asnCount}>{headerItem.asnCount}</Text>
+               <View style={{ flexDirection: "row" }}>
+                  <Text style={styles.asnCountLabel}>ASN Count:</Text>
+                  <Text style={styles.asnCount}>{headerItem.asnCount}</Text>
+               </View>
+               <Text style={styles.helperText}>YTR: Yet to Receive</Text>
             </View>
          )}
       </>
@@ -1983,18 +1986,27 @@ const styles = StyleSheet.create({
 
    asnCountContainer: {
       flexDirection: "row",
-      marginVertical: 10,
+      marginTop: 10,
+      marginBottom: 20,
+      paddingHorizontal: 5,
+      justifyContent: "space-between",
+      alignItems: "center",
    },
    asnCountLabel: {
       fontFamily: "Montserrat-Regular",
-      fontSize: 20,
-      color: "black",
+      fontSize: 17,
+      color: "rgba(0,0,0,0.8)",
       marginRight: 5,
    },
    asnCount: {
       fontFamily: "Montserrat-Bold",
-      fontSize: 20,
-      color: "black",
+      fontSize: 17,
+      color: "rgba(0,0,0,0.8)",
+   },
+   helperText: {
+      fontFamily: "Montserrat-Bold",
+      fontSize: 13,
+      color: "rgba(0,0,0,0.5)",
    },
 
    // Date Picker Styles

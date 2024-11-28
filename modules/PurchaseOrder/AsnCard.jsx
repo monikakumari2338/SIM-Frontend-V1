@@ -196,7 +196,10 @@ export function AsnCard2({ item, entryItem }) {
                   label="Receiving On"
                   value={item.receivingDate || "YTR"}
                />
-               <InfoContainer label="Received Qty" value={item.totalQty} />
+               <InfoContainer
+                  label="Received Qty"
+                  value={item.status === "Pending" ? "YTR" : item.totalQty}
+               />
             </View>
          </View>
 
