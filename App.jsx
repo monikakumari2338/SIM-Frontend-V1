@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "react-native-gesture-handler";
 import {
    ActivityIndicator,
@@ -40,6 +40,7 @@ import RtvNavigator from "./modules/ReturnToVendor/RtvNavigator";
 // Fonts
 import { useFonts } from "expo-font";
 import Footer from "./globalComps/Footer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
 
@@ -54,6 +55,17 @@ export default function App() {
    if (!loaded) {
       return <ActivityIndicator size="large" color="#112d4e" />;
    }
+
+   useEffect(() => {
+      async function clearAsync() {
+         try {
+            await AsyncStorage.clear();
+         } catch (error) {
+            console.log(error);
+         }
+      }
+      clearAsync();
+   }, []);
 
    return (
       <AuthProvider>

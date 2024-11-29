@@ -1,8 +1,4 @@
-import React, {
-   useContext,
-   useEffect,
-   useState,
-} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
    View,
    Text,
@@ -12,25 +8,17 @@ import {
    Platform,
    TouchableOpacity,
 } from "react-native";
-import {
-   SearchBar,
-   Button,
-   Icon,
-} from "@rneui/themed";
+import { SearchBar, Button, Icon } from "@rneui/themed";
 import { endpoints } from "../../context/endpoints";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
-import {
-   CameraView,
-   useCameraPermissions,
-} from "expo-camera";
+import { CameraView, useCameraPermissions } from "expo-camera";
 
 export default function GlobalSearch() {
    // Constants and Variables
    const [sku, setSku] = useState("");
    const [item, setItem] = useState(null);
-   const { storeName, getData } =
-      useContext(AuthContext);
+   const { storeName, getData } = useContext(AuthContext);
 
    // UseEffect: Search on SKU modification
    useEffect(() => {
@@ -56,16 +44,23 @@ export default function GlobalSearch() {
 
    return (
       <KeyboardAvoidingView
-         behavior={
-            Platform.OS === "ios"
-               ? "padding"
-               : "height"
-         }
-         style={{ flex: 0.9 }}
+         behavior={Platform.OS === "ios" ? "padding" : "height"}
+         style={{
+            flex: 0.9,
+         }}
       >
-         <Scanner {...{ sku, setSku }} />
+         <Scanner
+            {...{
+               sku,
+               setSku,
+            }}
+         />
          <ManualSearch
-            {...{ sku, setSku, item }}
+            {...{
+               sku,
+               setSku,
+               item,
+            }}
          />
       </KeyboardAvoidingView>
    );
@@ -73,8 +68,17 @@ export default function GlobalSearch() {
 
 function Scanner({ sku, setSku }) {
    const [facing, setFacing] = useState("back");
-   const [permission, requestPermission] =
-      useCameraPermissions();
+   const [permission, requestPermission] = useCameraPermissions();
+   const { storeName, getData } = useContext(AuthContext);
+
+   // get sku from upc search, then use that sku for setSku
+   function searchUpc(upc) {
+      const itemDetails = getData(
+         endpoints.getUpcDetails + `${upc}/${storeName}`,
+      );
+      console.log("Global Search SKU:", itemDetails);
+      setSku(itemDetails.sku);
+   }
 
    // ask for permission on render
    useEffect(() => {
@@ -95,17 +99,14 @@ function Scanner({ sku, setSku }) {
                   textAlign: "center",
                }}
             >
-               We need your permission to show the
-               camera
+               We need your permission to show the camera
             </Text>
          </View>
       );
    }
 
    function toggleCameraFacing() {
-      setFacing((current) =>
-         current === "back" ? "front" : "back",
-      );
+      setFacing((current) => (current === "back" ? "front" : "back"));
    }
 
    return (
@@ -113,10 +114,8 @@ function Scanner({ sku, setSku }) {
          <CameraView
             style={styles.camera}
             facing={facing}
-            onBarcodeScanned={(data) => {
-               if (sku.length === 0) {
-                  setSku(data.data);
-               }
+            onBarcodeScanned={(response) => {
+               console.log("Barcode Scanned:", response.data);
             }}
          >
             <View style={styles.buttonContainer}>
@@ -145,16 +144,18 @@ function ManualSearch({ sku, setSku, item }) {
             placeholder="Search an item SKU here..."
             value={sku}
             onChangeText={setSku}
-            containerStyle={
-               styles.searchContainer
-            }
-            inputContainerStyle={
-               styles.searchInput
-            }
+            containerStyle={styles.searchContainer}
+            inputContainerStyle={styles.searchInput}
          />
 
          {/* Item Card */}
-         {item && <ItemCard {...{ item }} />}
+         {item && (
+            <ItemCard
+               {...{
+                  item,
+               }}
+            />
+         )}
       </View>
    );
 }
@@ -165,14 +166,12 @@ function ItemCard({ item }) {
    function InfoSection({ label, value }) {
       return (
          <View
-            style={{ flexDirection: "column" }}
+            style={{
+               flexDirection: "column",
+            }}
          >
-            <Text style={styles.label}>
-               {label}
-            </Text>
-            <Text style={styles.value}>
-               {value}
-            </Text>
+            <Text style={styles.label}>{label}</Text>
+            <Text style={styles.value}>{value}</Text>
          </View>
       );
    }
@@ -183,7 +182,9 @@ function ItemCard({ item }) {
    return (
       <View style={styles.itemCard}>
          <Image
-            source={{ uri: item.imageData }}
+            source={{
+               uri: item.imageData,
+            }}
             style={styles.itemImage}
          />
          <View
@@ -192,15 +193,11 @@ function ItemCard({ item }) {
                justifyContent: "space-between",
             }}
          >
-            <InfoSection
-               label="SKU"
-               value={item.sku}
-            />
+            <InfoSection label="SKU" value={item.sku} />
             <View>
                <Text
                   style={{
-                     fontFamily:
-                        "Montserrat-Bold",
+                     fontFamily: "Montserrat-Bold",
                      fontSize: 16,
                      color: "#f0f0f0",
                   }}
@@ -209,8 +206,7 @@ function ItemCard({ item }) {
                </Text>
                <Text
                   style={{
-                     fontFamily:
-                        "Montserrat-Regular",
+                     fontFamily: "Montserrat-Regular",
                      fontSize: 12,
                      color: "#f0f0f0",
                   }}

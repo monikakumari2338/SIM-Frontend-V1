@@ -36,7 +36,7 @@ export default function Login() {
                   response.map((store) => ({
                      label: store.storeName,
                      value: store.storeId,
-                  }))
+                  })),
                );
             } else {
                console.error("Expected an array but got:", response);
@@ -62,7 +62,7 @@ export default function Login() {
    if (allStores.length === 0) {
       return (
          <View style={styles.loginPage}>
-            {/* <ActivityIndicator size="large" color="#f0f0f0" /> */}
+            <ActivityIndicator size="large" color="#f0f0f0" />
          </View>
       );
    } else {

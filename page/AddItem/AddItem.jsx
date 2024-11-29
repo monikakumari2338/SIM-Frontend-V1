@@ -1,8 +1,4 @@
-import {
-   useContext,
-   useState,
-   useEffect,
-} from "react";
+import { useContext, useState, useEffect } from "react";
 import {
    View,
    Text,
@@ -12,35 +8,18 @@ import {
    Alert,
    TouchableOpacity,
 } from "react-native";
-import {
-   Button,
-   Icon,
-   Input,
-   Overlay,
-} from "@rneui/themed";
-import {
-   CameraView,
-   useCameraPermissions,
-} from "expo-camera";
+import { Button, Icon, Input, Overlay } from "@rneui/themed";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../context/AuthContext";
 import { endpoints } from "../../context/endpoints";
 
 export default function AddItem({ route }) {
    // States and vars
-   const {
-      type,
-      tempItems,
-      setTempItems,
-      tempSupplier,
-      poItem,
-      tsfStore,
-   } = route.params;
-   const [suggestions, setSuggestions] = useState(
-      [],
-   );
-   const { getData, storeName } =
-      useContext(AuthContext);
+   const { type, tempItems, setTempItems, tempSupplier, poItem, tsfStore } =
+      route.params;
+   const [suggestions, setSuggestions] = useState([]);
+   const { getData, storeName } = useContext(AuthContext);
 
    // Primary Search Function
    async function searchItems(searchStr) {
@@ -63,23 +42,16 @@ export default function AddItem({ route }) {
 
       // Set suggestions array based on search results from functions
       try {
-         setSuggestions(
-            await searchFunctions[type](
-               searchStr,
-            ),
-         );
+         setSuggestions(await searchFunctions[type](searchStr));
       } catch (error) {
          console.log(error);
       }
    }
    // Search Function for All Items
    async function generalItemSearch(searchStr) {
-      const store = tsfStore
-         ? tsfStore
-         : storeName;
+      const store = tsfStore ? tsfStore : storeName;
       const searchResult = await getData(
-         endpoints.generalItemSearch +
-            `${searchStr}/${store}/IA`,
+         endpoints.generalItemSearch + `${searchStr}/${store}/IA`,
       );
 
       if (searchResult.items.length > 0) {
@@ -112,8 +84,7 @@ export default function AddItem({ route }) {
    // Search function for PO
    async function poItemSearch(searchStr) {
       const searchResult = await getData(
-         endpoints.fetchPoItems +
-            `${poItem.id}/${searchStr}/PO`,
+         endpoints.fetchPoItems + `${poItem.id}/${searchStr}/PO`,
       );
 
       if (searchResult.items.length > 0) {
@@ -129,15 +100,12 @@ export default function AddItem({ route }) {
    // Search cat-specific items for Stock Count
    async function catItemSearch(searchStr) {
       const searchResult = await getData(
-         endpoints.searchCatItems +
-            `${searchStr}/${storeName}/Sportswear`,
+         endpoints.searchCatItems + `${searchStr}/${storeName}/Sportswear`,
       );
 
       if (searchResult.items.length > 0) {
          // for all items, set type to "SC"
-         searchResult.items.forEach(
-            (item) => (item.type = "SC"),
-         );
+         searchResult.items.forEach((item) => (item.type = "SC"));
          return searchResult.items;
       } else {
          Alert.alert(
@@ -161,7 +129,10 @@ export default function AddItem({ route }) {
             }}
          >
             <Scanner
-               {...{ suggestions, searchItems }}
+               {...{
+                  suggestions,
+                  searchItems,
+               }}
             />
          </View>
 
@@ -176,9 +147,7 @@ export default function AddItem({ route }) {
             {/* Input for Item ID */}
             <Input
                placeholder="Enter an SKU to search"
-               onChangeText={(text) =>
-                  searchItems(text)
-               }
+               onChangeText={(text) => searchItems(text)}
                style={{
                   padding: 10,
                   margin: 20,
@@ -206,25 +175,15 @@ export default function AddItem({ route }) {
    );
 }
 
-function ItemSuggestion({
-   type,
-   item,
-   tempItems,
-   setTempItems,
-}) {
+function ItemSuggestion({ type, item, tempItems, setTempItems }) {
    // States and vars
    const navigation = useNavigation();
-   const [
-      expectedQtyOverlay,
-      setExpectedQtyOverlay,
-   ] = useState(false);
+   const [expectedQtyOverlay, setExpectedQtyOverlay] = useState(false);
 
    // Functions
    function handleAddItem(item) {
       const tempItemsCopy = [...tempItems];
-      const index = tempItemsCopy.findIndex(
-         (i) => i.sku === item.sku,
-      );
+      const index = tempItemsCopy.findIndex((i) => i.sku === item.sku);
       // if item already exists in tempItems, increase quantity
       if (index !== -1) {
          tempItemsCopy[index].qty++;
@@ -250,28 +209,17 @@ function ItemSuggestion({
                   alignItems: "center",
                }}
             >
-               <Image
-                  style={
-                     styles.suggestionCardImage
-                  }
-                  src={item.imageData}
-               />
+               <Image style={styles.suggestionCardImage} src={item.imageData} />
                <View>
                   <View
                      style={{
                         marginBottom: 5,
                      }}
                   >
-                     <Text
-                        style={styles.text2Bold}
-                     >
-                        SKU: {item.sku}
-                     </Text>
+                     <Text style={styles.text2Bold}>SKU: {item.sku}</Text>
                   </View>
 
-                  <Text style={styles.text2Name}>
-                     {item.itemName}
-                  </Text>
+                  <Text style={styles.text2Name}>{item.itemName}</Text>
                   <Text style={styles.text2}>
                      {item.color} / {item.size}
                   </Text>
@@ -318,10 +266,7 @@ function ExpectedQtyOverlay({
       // validate the qty
       const qtyInt = parseInt(qty);
       if (qtyInt < 1) {
-         Alert.alert(
-            "Invalid quantity",
-            "Quantity must be greater than 0",
-         );
+         Alert.alert("Invalid quantity", "Quantity must be greater than 0");
          return false;
       }
       return true;
@@ -343,15 +288,12 @@ function ExpectedQtyOverlay({
    }
 
    const navigation = useNavigation();
-   const [expectedQty, setExpectedQty] =
-      useState(0);
+   const [expectedQty, setExpectedQty] = useState(0);
 
    return (
       <Overlay
          isVisible={expectedQtyOverlay}
-         onBackdropPress={() =>
-            setExpectedQtyOverlay(false)
-         }
+         onBackdropPress={() => setExpectedQtyOverlay(false)}
          overlayStyle={{
             width: "80%",
             padding: 20,
@@ -369,9 +311,7 @@ function ExpectedQtyOverlay({
          </Text>
          <Input
             placeholder="Enter the received quantity"
-            onChangeText={(text) =>
-               setExpectedQty(text)
-            }
+            onChangeText={(text) => setExpectedQty(text)}
             keyboardType="number-pad"
          />
          <Button
@@ -379,9 +319,7 @@ function ExpectedQtyOverlay({
             titleStyle={{
                fontFamily: "Montserrat-Bold",
             }}
-            onPress={() =>
-               createItem(item, expectedQty)
-            }
+            onPress={() => createItem(item, expectedQty)}
             buttonStyle={{
                alignSelf: "center",
                paddingHorizontal: 20,
@@ -393,8 +331,17 @@ function ExpectedQtyOverlay({
 
 function Scanner({ suggestions, searchItems }) {
    const [facing, setFacing] = useState("back");
-   const [permission, requestPermission] =
-      useCameraPermissions();
+   const [permission, requestPermission] = useCameraPermissions();
+   const { storeName, getData } = useContext(AuthContext);
+
+   // Function to handle UPC search and then search for the item using SKU
+   function searchUpc(upc) {
+      const itemDetails = getData(
+         endpoints.getUpcDetails + `${upc}/${storeName}`,
+      );
+      console.log("Add Item SKU:", itemDetails.sku);
+      searchItems(itemDetails.sku);
+   }
 
    // ask for permission on render
    useEffect(() => {
@@ -415,17 +362,14 @@ function Scanner({ suggestions, searchItems }) {
                   textAlign: "center",
                }}
             >
-               We need your permission to show the
-               camera
+               We need your permission to show the camera
             </Text>
          </View>
       );
    }
 
    function toggleCameraFacing() {
-      setFacing((current) =>
-         current === "back" ? "front" : "back",
-      );
+      setFacing((current) => (current === "back" ? "front" : "back"));
    }
 
    return (
@@ -435,7 +379,7 @@ function Scanner({ suggestions, searchItems }) {
             facing={facing}
             onBarcodeScanned={(data) => {
                if (suggestions.length === 0) {
-                  searchItems(data.data);
+                  searchUpc(data.data);
                }
             }}
          >

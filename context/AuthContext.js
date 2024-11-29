@@ -20,7 +20,8 @@ export const AuthProvider = ({ children }) => {
    // const baseURL = "http://10.0.2.2:9029";
 
    // Physical Device
-   const baseURL = "http://192.168.1.6:9029";
+   // const baseURL = "http://192.168.1.6:9029";
+   const baseURL = "http://192.168.54.62:9029";
 
    const api = axios.create({
       baseURL,
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
          };
          const response = await axios.post(
             `${baseURL}/api/auth/login`,
-            loginRequest
+            loginRequest,
          );
 
          // Adjust for the typo in the response
@@ -94,7 +95,7 @@ export const AuthProvider = ({ children }) => {
          (error) => {
             console.error("Request interceptor error", error);
             return Promise.reject(error);
-         }
+         },
       );
    }
 
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
          console.error(
             `Failed to fetch protected data from ${endpoint}`,
-            error.message
+            error.message,
          );
       }
    }
@@ -135,7 +136,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
          console.error(
             `Failed to post protected data to ${endpoint}`,
-            error.message
+            error.message,
          );
       }
    }
