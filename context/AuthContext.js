@@ -7,7 +7,7 @@ import { Alert } from "react-native";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-   const prettify = true;
+   const showResponses = false;
 
    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -18,9 +18,9 @@ export const AuthProvider = ({ children }) => {
 
    // Emulator
    // const baseURL = "http://10.0.2.2:9029";
-
-   // Physical Device
+   // Physical Device: Home Wifi
    // const baseURL = "http://192.168.1.6:9029";
+   // Physical Device: Mobile Hotspot
    const baseURL = "http://192.168.54.62:9029";
 
    const api = axios.create({
@@ -105,12 +105,9 @@ export const AuthProvider = ({ children }) => {
          setAuthorizationHeader();
          const response = await api.get(endpoint);
          console.log("GET:", endpoint);
-         if (prettify) {
+         if (showResponses) {
             console.log(JSON.stringify(response.data, null, 2));
-         } else {
-            console.log(response.data);
          }
-         console.log();
          return response.data;
       } catch (error) {
          console.error(
@@ -125,13 +122,10 @@ export const AuthProvider = ({ children }) => {
       try {
          const response = await api.post(endpoint, data);
          console.log("POST:", endpoint);
-         if (prettify) {
+         if (showResponses) {
             console.log(JSON.stringify(data, null, 2));
             console.log(JSON.stringify(response.data, null, 2));
-         } else {
-            console.log(response.data);
          }
-         console.log();
          return response.data;
       } catch (error) {
          console.error(

@@ -56,16 +56,14 @@ export default function App() {
       return <ActivityIndicator size="large" color="#112d4e" />;
    }
 
-   useEffect(() => {
-      async function clearAsync() {
-         try {
-            await AsyncStorage.clear();
-         } catch (error) {
-            console.log(error);
-         }
+   async function clearAsync() {
+      try {
+         await AsyncStorage.clear();
+      } catch (error) {
+         console.log(error);
       }
-      clearAsync();
-   }, []);
+   }
+   clearAsync();
 
    return (
       <AuthProvider>

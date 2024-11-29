@@ -51,7 +51,6 @@ export default function GlobalSearch() {
       >
          <Scanner
             {...{
-               sku,
                setSku,
             }}
          />
@@ -66,17 +65,17 @@ export default function GlobalSearch() {
    );
 }
 
-function Scanner({ sku, setSku }) {
+function Scanner({ setSku }) {
    const [facing, setFacing] = useState("back");
    const [permission, requestPermission] = useCameraPermissions();
    const { storeName, getData } = useContext(AuthContext);
 
    // get sku from upc search, then use that sku for setSku
-   function searchUpc(upc) {
-      const itemDetails = getData(
+   async function searchUpc(upc) {
+      const itemDetails = await getData(
          endpoints.getUpcDetails + `${upc}/${storeName}`,
       );
-      console.log("Global Search SKU:", itemDetails);
+      console.log("Global Search SKU:", itemDetails.sku);
       setSku(itemDetails.sku);
    }
 
@@ -115,7 +114,7 @@ function Scanner({ sku, setSku }) {
             style={styles.camera}
             facing={facing}
             onBarcodeScanned={(response) => {
-               console.log("Barcode Scanned:", response.data);
+               searchUpc(response.data);
             }}
          >
             <View style={styles.buttonContainer}>

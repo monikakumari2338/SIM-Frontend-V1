@@ -335,8 +335,8 @@ function Scanner({ suggestions, searchItems }) {
    const { storeName, getData } = useContext(AuthContext);
 
    // Function to handle UPC search and then search for the item using SKU
-   function searchUpc(upc) {
-      const itemDetails = getData(
+   async function searchUpc(upc) {
+      const itemDetails = await getData(
          endpoints.getUpcDetails + `${upc}/${storeName}`,
       );
       console.log("Add Item SKU:", itemDetails.sku);
@@ -377,10 +377,8 @@ function Scanner({ suggestions, searchItems }) {
          <CameraView
             style={styles.camera}
             facing={facing}
-            onBarcodeScanned={(data) => {
-               if (suggestions.length === 0) {
-                  searchUpc(data.data);
-               }
+            onBarcodeScanned={(response) => {
+               searchUpc(response.data);
             }}
          >
             <View style={styles.buttonContainer}>
