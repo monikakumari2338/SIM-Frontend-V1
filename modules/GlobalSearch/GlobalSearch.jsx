@@ -31,7 +31,7 @@ export default function GlobalSearch() {
 
          try {
             const response = await getData(
-               `${endpoints.storeItemDetails}${sku}/${storeName}`,
+               `${endpoints.storeItemDetails}${sku}/${storeName}`
             );
             setItem(response);
          } catch (error) {
@@ -49,11 +49,11 @@ export default function GlobalSearch() {
             flex: 0.9,
          }}
       >
-         <Scanner
+         {/* <Scanner
             {...{
                setSku,
             }}
-         />
+         /> */}
          <ManualSearch
             {...{
                sku,
@@ -73,7 +73,7 @@ function Scanner({ setSku }) {
    // get sku from upc search, then use that sku for setSku
    async function searchUpc(upc) {
       const itemDetails = await getData(
-         endpoints.getUpcDetails + `${upc}/${storeName}`,
+         endpoints.getUpcDetails + `${upc}/${storeName}`
       );
       console.log("Global Search SKU:", itemDetails.sku);
       setSku(itemDetails.sku);

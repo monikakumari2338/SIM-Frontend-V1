@@ -51,7 +51,7 @@ export default function AddItem({ route }) {
    async function generalItemSearch(searchStr) {
       const store = tsfStore ? tsfStore : storeName;
       const searchResult = await getData(
-         endpoints.generalItemSearch + `${searchStr}/${store}/IA`,
+         endpoints.generalItemSearch + `${searchStr}/${store}/IA`
       );
 
       if (searchResult.items.length > 0) {
@@ -59,7 +59,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "No items found",
-            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`,
+            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`
          );
          return [];
       }
@@ -68,7 +68,7 @@ export default function AddItem({ route }) {
    async function supplierItemSearch(searchStr) {
       const searchResult = await getData(
          endpoints.fetchItemsBySupplier +
-            `${tempSupplier}/${searchStr}/${storeName}/DSD`,
+            `${tempSupplier}/${searchStr}/${storeName}/DSD`
       );
 
       if (searchResult.items.length > 0) {
@@ -76,7 +76,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "No items found",
-            `No valid items found for the searched SKU ${searchStr} for the supplier ${tempSupplier}`,
+            `No valid items found for the searched SKU ${searchStr} for the supplier ${tempSupplier}`
          );
          return [];
       }
@@ -84,7 +84,7 @@ export default function AddItem({ route }) {
    // Search function for PO
    async function poItemSearch(searchStr) {
       const searchResult = await getData(
-         endpoints.fetchPoItems + `${poItem.id}/${searchStr}/PO`,
+         endpoints.fetchPoItems + `${poItem.id}/${searchStr}/PO`
       );
 
       if (searchResult.items.length > 0) {
@@ -92,7 +92,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "No items found",
-            `No valid items found for the searched SKU ${searchStr} for the PO ${poItem.poNumber}`,
+            `No valid items found for the searched SKU ${searchStr} for the PO ${poItem.poNumber}`
          );
          return [];
       }
@@ -100,7 +100,7 @@ export default function AddItem({ route }) {
    // Search cat-specific items for Stock Count
    async function catItemSearch(searchStr) {
       const searchResult = await getData(
-         endpoints.searchCatItems + `${searchStr}/${storeName}/Sportswear`,
+         endpoints.searchCatItems + `${searchStr}/${storeName}/Sportswear`
       );
 
       if (searchResult.items.length > 0) {
@@ -110,7 +110,7 @@ export default function AddItem({ route }) {
       } else {
          Alert.alert(
             "Is the SKU correct?",
-            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`,
+            `No valid items found for the searched SKU "${searchStr}" in the store "${storeName}"`
          );
          return [];
       }
@@ -128,12 +128,12 @@ export default function AddItem({ route }) {
                backgroundColor: "black",
             }}
          >
-            <Scanner
+            {/* <Scanner
                {...{
                   suggestions,
                   searchItems,
                }}
-            />
+            /> */}
          </View>
 
          {/* Manual Item Search section */}
@@ -337,7 +337,7 @@ function Scanner({ suggestions, searchItems }) {
    // Function to handle UPC search and then search for the item using SKU
    async function searchUpc(upc) {
       const itemDetails = await getData(
-         endpoints.getUpcDetails + `${upc}/${storeName}`,
+         endpoints.getUpcDetails + `${upc}/${storeName}`
       );
       console.log("Add Item SKU:", itemDetails.sku);
       searchItems(itemDetails.sku);
