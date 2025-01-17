@@ -1,22 +1,22 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import {
    View,
    Text,
    ActivityIndicator,
    StyleSheet,
    ScrollView,
+   Dimensions,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { Icon } from "@rneui/themed";
+import { interpolate } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
-import {
-   BarChart,
-   PieChart,
-   StackedBarChart,
-   ProgressChart,
-} from "react-native-chart-kit";
+import { BarChart, PieChart, ProgressChart } from "react-native-chart-kit";
 import { endpoints } from "../../context/endpoints";
 import { AuthContext } from "../../context/AuthContext";
+
+const PAGE_WIDTH = Dimensions.get("window").width * 0.6;
+const PAGE_HEIGHT = Dimensions.get("window").height * 0.4;
 
 export default function Dashboard() {
    // Creds
@@ -127,6 +127,28 @@ function TasksCarousel({ data }) {
       );
       return matchingStatic ? { ...task, ...matchingStatic } : task;
    });
+   const [currentIndex, setCurrentIndex] = useState(0);
+   // Custom Animation Style
+   const animationStyle = useCallback((value) => {
+      "worklet";
+
+      const zIndex = Math.round(interpolate(value, [-1, 0, 1], [1, 2, 1]));
+      const rotateZ = `${interpolate(value, [-1, 0, 1], [-15, 0, 15])}deg`;
+      const translateX = interpolate(
+         value,
+         [-1, 0, 1],
+         [-PAGE_WIDTH, 0, PAGE_WIDTH]
+      );
+      const translateY = interpolate(value, [-1, 0, 1], [0, 50, 0]);
+      const opacity = interpolate(value, [-1, 0, 1], [0.5, 1, 0.5]);
+      const scale = interpolate(value, [-1, 0, 1], [0.8, 1, 0.8]);
+
+      return {
+         zIndex,
+         transform: [{ translateX }, { translateY }, { scale }],
+         // opacity,
+      };
+   }, []);
 
    function TaskCard({ info }) {
       function applyOpacity(color, opacity) {
@@ -149,8 +171,11 @@ function TasksCarousel({ data }) {
 
       // module name abbreviation
       const moduleNameAbbrev = {
+         "Stock Count": "SC",
          "Return to Vendor": "RTV",
          "Transfer Receive": "TR",
+         "Stock In Hand": "Stock",
+         "PO Receive": "PO",
       };
 
       // icon container bg (utlizes applyOpacity)
@@ -216,45 +241,80 @@ function TasksCarousel({ data }) {
          <Text style={styles.sectionHeading}>Tasks</Text>
          <Carousel
             loop
-            mode="parallax"
-            width={411}
-            height={170}
+            style={{
+               width: Dimensions.get("window").width,
+               justifyContent: "center",
+               alignItems: "center",
+            }}
+            width={PAGE_WIDTH * 1.3}
+            height={PAGE_HEIGHT * 0.7}
+            data={[...new Array(6).keys()]}
+            renderItem={({ index }) => (
+               <TaskCard info={taskCardData[index % taskCardData.length]} />
+            )}
             autoPlay={true}
             autoPlayInterval={3000}
-            data={taskCardData}
-            scrollAnimationDuration={1000}
-            renderItem={({ index }) => <TaskCard info={taskCardData[index]} />}
-            pagingEnabled={true}
+            customAnimation={animationStyle}
+            onProgressChange={(_, absoluteProgress) =>
+               setCurrentIndex(Math.round(absoluteProgress))
+            }
          />
       </>
    );
 }
 
 function StockVarianceGraph({ data }) {
-   // Data is
-   // [{"actualCount": 0, "category": "Womenwear", "systemCount": 180}, {"actualCount": 0, "category": "Sportswear", "systemCount": 1293}]
+   const labels = data.variance.map((item) => item.category);
 
-   const stackedChartData = {
-      labels: data.variance.map((item) => item.category),
-      legend: ["Actual", "System"],
-      data: data.variance.map((item) => [item.actualCount, item.systemCount]),
-      barColors: ["#74b900", "#0984e3"],
+   const barChartData = {
+      labels: labels,
+      datasets: [
+         {
+            data: data.variance.map((item) => item.actualCount), // Actual counts
+            color: () => "#74b900", // Green for actual
+         },
+         {
+            data: data.variance.map((item) => item.systemCount), // System counts
+            color: () => "#0984e3", // Blue for system
+         },
+      ],
    };
 
    return (
       <View style={styles.graphContainer}>
          <Text style={styles.graphHeading}>Category-wise Stock Variance</Text>
-         <StackedBarChart
-            data={stackedChartData}
+         <BarChart
+            data={{
+               labels: barChartData.labels,
+               datasets: [
+                  {
+                     data: barChartData.datasets[0].data, // Actual counts
+                  },
+                  {
+                     data: barChartData.datasets[1].data, // System counts
+                  },
+               ],
+            }}
             width={380}
             height={300}
+            yAxisLabel=""
+            yAxisSuffix=""
+            fromZero={true}
             chartConfig={{
                backgroundGradientFrom: "#f0f0f0",
                backgroundGradientTo: "#f0f0f0",
+               decimalPlaces: 0,
+               barPercentage: 0.5,
                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+               style: {
+                  borderRadius: 16,
+               },
             }}
-            style={{ marginTop: 10 }}
-            withHorizontalLabels={false}
+            style={{
+               marginVertical: 10,
+               borderRadius: 16,
+            }}
+            showValuesOnTopOfBars={true}
          />
       </View>
    );
@@ -287,7 +347,8 @@ function DiscrepancyGraph({ data }) {
 
    return (
       <View style={styles.graphContainer}>
-         <Text style={styles.graphHeading}>Inventory Discrepancy Report</Text>
+         <Text style={styles.graphHeading}>Inventory Health</Text>
+         <Text style={styles.barChartLabel}>Sellable Vs Non-Sellable</Text>
          <PieChart
             data={discrepancy}
             width={380}
@@ -379,9 +440,12 @@ const styles = StyleSheet.create({
       backgroundColor: "#112d4e",
       padding: 20,
       marginTop: 10,
+      borderWidth: 3,
+      borderColor: "white",
       borderRadius: 20,
       flexDirection: "row",
       justifyContent: "space-between",
+      elevation: 10,
    },
    iconContainer: {
       width: 70,
@@ -429,5 +493,14 @@ const styles = StyleSheet.create({
       fontSize: 12,
       color: "#112d4e",
       marginBottom: 20,
+   },
+   graphContainer: {
+      padding: 20,
+      alignItems: "center",
+   },
+   graphHeading: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginBottom: 10,
    },
 });

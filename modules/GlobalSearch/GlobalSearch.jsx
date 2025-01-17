@@ -49,11 +49,11 @@ export default function GlobalSearch() {
             flex: 0.9,
          }}
       >
-         {/* <Scanner
+         <Scanner
             {...{
                setSku,
             }}
-         /> */}
+         />
          <ManualSearch
             {...{
                sku,

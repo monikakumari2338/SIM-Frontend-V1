@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import "react-native-gesture-handler";
 import {
    ActivityIndicator,
@@ -18,9 +18,10 @@ import {
 import { Provider as PaperProvider } from "react-native-paper";
 import Toast, { BaseToast } from "react-native-toast-message";
 import { createTheme, Icon, ThemeProvider } from "@rneui/themed";
-import { LogBox } from "react-native";
-
-LogBox.ignoreAllLogs();
+import {
+   configureReanimatedLogger,
+   ReanimatedLogLevel,
+} from "react-native-reanimated";
 
 // Contexts
 import { AuthProvider, AuthContext } from "./context/AuthContext";
@@ -41,6 +42,11 @@ import RtvNavigator from "./modules/ReturnToVendor/RtvNavigator";
 import { useFonts } from "expo-font";
 import Footer from "./globalComps/Footer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+configureReanimatedLogger({
+   level: ReanimatedLogLevel.warn,
+   strict: false,
+});
 
 const Drawer = createDrawerNavigator();
 

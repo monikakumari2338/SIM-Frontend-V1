@@ -17,11 +17,13 @@ export const AuthProvider = ({ children }) => {
    const [user, setuser] = useState("");
 
    // Emulator
-   // const baseURL = "http://10.0.2.2:9029";
+   // const baseURL = "http://10.0.2.16:9029";
    // Physical Device: Home Wifi
-   // const baseURL = "http://192.168.1.2:9029";
+   // const baseURL = "http://100.86.106.112:9029";
    // Physical Device: Mobile Hotspot
-   const baseURL = "http://192.168.207.95:9029";
+   // const baseURL = "http://192.168.207.95:9029";
+   // const baseURL = "http://192.168.62.95:9029";
+   const baseURL = "http://192.168.137.130:9029";
 
    const api = axios.create({
       baseURL,

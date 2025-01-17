@@ -123,8 +123,6 @@ export default function ListingPage({ type }) {
                }}
                buttonStyle={{
                   backgroundColor: theme.colors.primary,
-                  borderRadius: 20,
-                  width: 120,
                   justifyContent: "space-evenly",
                }}
                onPress={handleCreate}

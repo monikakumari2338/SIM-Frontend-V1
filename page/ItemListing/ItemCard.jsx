@@ -367,8 +367,8 @@ function QuantityUpdateOverlay({ item, quantityOverlay, setQuantityOverlay }) {
 }
 
 function QuantityUpdateOverlay2({ item, quantityOverlay, setQuantityOverlay }) {
-   const [newQty, setNewQty] = useState(0);
-   const [damageQty, setDamageQty] = useState(0);
+   const [newQty, setNewQty] = useState(null);
+   const [damageQty, setDamageQty] = useState(null);
    const [damageImage, setDamageImage] = useState(null);
 
    function isValidQty(qty) {
@@ -473,7 +473,7 @@ function QuantityUpdateOverlay2({ item, quantityOverlay, setQuantityOverlay }) {
 
          {/* Received Qty Input */}
          <Input
-            value={newQty.toString()}
+            value={newQty?.toString()}
             onChangeText={(text) => setNewQty(Number(text))}
             keyboardType="numeric"
             placeholder="Received Quantity"
@@ -481,7 +481,7 @@ function QuantityUpdateOverlay2({ item, quantityOverlay, setQuantityOverlay }) {
 
          {/* Damage Qty Input */}
          <Input
-            value={damageQty.toString()}
+            value={damageQty?.toString()}
             onChangeText={(text) => setDamageQty(Number(text))}
             keyboardType="numeric"
             placeholder="Damaged Quantity"

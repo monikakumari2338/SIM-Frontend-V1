@@ -733,7 +733,7 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
    const isRecounted = entryItem.recountStatus === "Completed";
    const [proofOverlay, setProofOverlay] = useState(false);
    const navigation = useNavigation();
-   const { postData } = useContext(AuthContext);
+   const { postData, user } = useContext(AuthContext);
 
    // Functions
    async function handleSave() {
@@ -755,6 +755,8 @@ function ButtonGroup({ entryItem, tempItems, tempReason, tempSupplier }) {
          } else if (entryItem.type === "RTV") {
             requestBody.supplierId = tempSupplier;
             requestBody.reason = tempReason;
+            requestBody.dispatchedUser = user;
+            console.log("RTV SAVE", requestBody);
             await postData(endpoints.saveAsDraftRTV, requestBody);
          }
 
@@ -1697,7 +1699,7 @@ function ProofOverlay({
 }) {
    const navigation = useNavigation();
    const [image, setImage] = useState(null);
-   const { postData } = useContext(AuthContext);
+   const { postData, user } = useContext(AuthContext);
 
    // Functions
    async function pickImage() {
@@ -1717,13 +1719,13 @@ function ProofOverlay({
       }
    }
 
-   async function handleSubmit(imageUri = null) {
+   async function handleSubmit(imageUri = "") {
       const data = {
          id: entryItem.id,
          totalSku: tempItems.reduce((acc, item) => acc + Number(item.qty), 0),
-         status: "Completed",
+         status: "Complete",
          items: tempItems,
-         imageData: imageUri,
+         imageData: "",
       };
 
       try {
@@ -1736,6 +1738,8 @@ function ProofOverlay({
          } else if (entryItem.type === "RTV") {
             data.reason = tempReason;
             data.supplierId = tempSupplier;
+            data.dispatchedUser = user;
+            console.log("RTV SUBMIT", data);
             await postData(endpoints.submitRTV, data);
          }
 

@@ -86,6 +86,8 @@ export default function ItemStock({ route }) {
          );
          if (response) {
             setCurrentItem(response);
+            setSelectedSize(response.size || "N/A");
+            setSelectedColor(response.color || "N/A");
          }
       } catch (error) {
          console.error("Error fetching item details:", error);
@@ -240,7 +242,6 @@ function DetailCard({
          </View>
       );
    }
-
    function VariantInfoContainer({ label, value }) {
       return (
          <View>
@@ -299,11 +300,57 @@ function DetailCard({
                {/* Variant Info */}
                <View style={styles.cardLeftBottom}>
                   <View style={styles.variantLeft}>
-                     <VariantInfoContainer {...variantInfo[0]} />
+                     {/* <VariantInfoContainer {...variantInfo[0]} /> */}
+                     <Text style={styles.variantInfoLabel}>Color</Text>
+                     <Button
+                        title={selectedSize}
+                        titleStyle={{
+                           fontFamily: "Montserrat-Regular",
+                           fontSize: 14,
+                           color: "#112d4e",
+                           textTransform: "uppercase",
+                        }}
+                        icon={{
+                           name: "chevron-right",
+                           type: "material-community",
+                           color: "#112d4e",
+                           size: 20,
+                        }}
+                        iconRight={true}
+                        buttonStyle={{
+                           backgroundColor: "white",
+                           borderRadius: 5,
+                           marginBottom: 5,
+                        }}
+                        onPress={() => setSizesOverlay(true)}
+                     />
                      <VariantInfoContainer {...variantInfo[1]} />
                   </View>
                   <View style={styles.variantRight}>
-                     <VariantInfoContainer {...variantInfo[2]} />
+                     {/* <VariantInfoContainer {...variantInfo[2]} /> */}
+                     <Text style={styles.variantInfoLabel}>Size</Text>
+                     <Button
+                        title={selectedColor}
+                        titleStyle={{
+                           fontFamily: "Montserrat-Regular",
+                           fontSize: 14,
+                           color: "#112d4e",
+                           textTransform: "uppercase",
+                        }}
+                        icon={{
+                           name: "chevron-right",
+                           type: "material-community",
+                           color: "#112d4e",
+                           size: 20,
+                        }}
+                        iconRight={true}
+                        buttonStyle={{
+                           backgroundColor: "white",
+                           borderRadius: 5,
+                           marginBottom: 5,
+                        }}
+                        onPress={() => setColorsOverlay(true)}
+                     />
                      <VariantInfoContainer {...variantInfo[3]} />
                   </View>
                </View>
@@ -314,7 +361,7 @@ function DetailCard({
                   <Text style={styles.qty}>{item.sellableStock || "N/A"}</Text>
                </View>
 
-               <View>
+               {/* <View>
                   <Button
                      title={selectedSize}
                      titleStyle={{
@@ -358,7 +405,7 @@ function DetailCard({
                      }}
                      onPress={() => setColorsOverlay(true)}
                   />
-               </View>
+               </View> */}
             </View>
          </View>
       );
@@ -529,7 +576,8 @@ const styles = StyleSheet.create({
       backgroundColor: "#112d4e",
       opacity: 0.8,
       borderRadius: 25,
-      padding: 20,
+      paddingVertical: 15,
+      paddingHorizontal: 20,
       flexDirection: "row",
    },
    cardLeft: {
@@ -552,6 +600,7 @@ const styles = StyleSheet.create({
    variantLeft: {
       flex: 0.5,
       justifyContent: "space-evenly",
+      marginRight: 10,
    },
    variantRight: {
       flex: 0.5,
